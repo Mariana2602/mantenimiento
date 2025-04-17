@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <title>Hospital</title>
+</head>
+<body>
+    <nav id="sidebarMenu" class="collapse d-lg-block sidebar collapse bg-white shadow-sm">
+        <div class="position-sticky">
+            <div class="list-group list-group-flush mx-3 mt-4">
+            <p class="fs-2 text-dark text-center">Hospital</p>
+                <a href="#" class="list-group-item list-group-item-action py-2 ripple" aria-current="true">
+                    <i class="fas fa-home fa-fw me-3"></i><span>Inicio</span></a>
+                <a href="#" class="list-group-item list-group-item-action py-2 ripple">
+                    <i class="fas fa-users fa-fw me-3"></i><span>Gestión de Personal</span>
+                </a>
+                <a href="#" class="list-group-item list-group-item-action py-2 ripple">
+                    <i class="fas fa-vial fa-fw me-3"></i><span>Laboratorio</span>
+                </a>
+                <a href="#" class="list-group-item list-group-item-action py-2 ripple">
+                    <i class="fas fa-boxes fa-fw me-3"></i><span>Inventario</span>
+                </a>
+                <a href="#" class="list-group-item list-group-item-action py-2 ripple">
+                    <i class="fas fa-shopping-cart fa-fw me-3"></i><span>Compras</span>
+                </a>
+                <a href="#" class="list-group-item list-group-item-action py-2 ripple">
+                    <i class="fas fa-tooth fa-fw me-3"></i><span>Consultas Odontológicas</span>
+                </a>
+                <a href="#" class="list-group-item list-group-item-action py-2 ripple">
+                    <i class="fas fa-stethoscope fa-fw me-3"></i><span>Consultas Médicas</span>
+                </a>
+                <a href="#" class="list-group-item list-group-item-action py-2 ripple">
+                    <i class="fas fa-file-invoice-dollar fa-fw me-3"></i><span>Administración</span>
+                </a>
+                <div class="dropdown">
+                    <a href="#" class="list-group-item list-group-item-action py-2 ripple dropdown-toggle active" type="button"  data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-tools fa-fw me-3"></i><span>Mantenimiento</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item active" href="#">Orden de mantenimiento</a></li>
+                        <li><a class="dropdown-item" href="equipos.html">Mantenimiento de equipos</a></li>
+                        <li><a class="dropdown-item" href="#">Repuestos</a></li>
+                        <li><a class="dropdown-item" href="#">Reporte de solicitudes</a></li>
+                    </ul>
+                </div>
+                <a href="#" class="list-group-item list-group-item-action py-2 ripple">
+                    <i class="fas fa-procedures fa-fw me-3"></i><span>Hospitalización</span>
+                </a>
+                <a href="#" class="list-group-item list-group-item-action py-2 ripple">
+                    <i class="fas fa-calendar-check fa-fw me-3"></i><span>Gestión de Citas</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+    <main role="main" class="my-4 mx-3">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <p class="fs-2 fw-bold">Mantenimiento</p>                
+                </div>
+                <div class="col-md-12 text-end">
+                </div>
+                <div class="col-md-9">
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" placeholder="Buscar ordenes...">
+                    </div>
+                </div>
+                <div class="col-md-3 text-end">
+                    <div class="d-inline-flex gap-1">
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Estado</button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#">Todas</a></li>
+                                <li><a class="dropdown-item" href="#">Pendiente</a></li>
+                                <li><a class="dropdown-item" href="#">Completado</a></li>
+                                <li><a class="dropdown-item" href="#">En proceso</a></li>
+                            </ul>
+                        </div>
+                        <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#modalSolicitud"><i class="fas fa-plus me-2"></i>Nueva solicitud</button>
+                        <div class="modal modal-lg fade" id="modalSolicitud" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Nueva solicitud de servicio</h5>
+                                    </div>
+                                    <div class="modal-body text-start">
+                                        <form class="row g-3" id="formularioMantenimiento">
+                                            <div class="col-md-6">
+                                              <label class="form-label">Equipo</label>
+                                              <select id="selectEquipo" class="form-select">
+                                              </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                              <label class="form-label">Repuesto</label>
+                                              <select id="selectRepuesto" class="form-select">
+                                              </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Tipo de mantenimiento</label>
+                                                <select id="tipoMantenimiento" class="form-select">
+                                                    <option selected>Correctivo</option>
+                                                    <option>Preventivo</option>
+                                                    <option>Proactivo</option>
+                                                    <option>Predictivo</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                              <label class="form-label">Fecha inicio</label>
+                                              <input id="fechaInicio" type="date" class="form-control">
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label">Estado</label>
+                                                <input id="estado" type="text" class="form-control" value="Pendiente" disabled>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Descripcion</label>
+                                                <input id="descripcion" type="text" class="form-control">
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label">Campo</label>
+                                                <input id="campo" type="text" class="form-control">
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                        <button id="btnOrdenMantenimiento" type="button" class="btn btn-primary">Crear solicitud</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="p-4 bg-white rounded-2 shadow">
+                        <p class="fs-2 m-0 fw-bold">Solicitudes de servicio</p>
+                        <hr>
+                        <table class="table table-striped text-center" id="ordenes-mantenimiento">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Tipo</th>
+                                    <th>Equipo</th>
+                                    <th>Fecha</th>
+                                    <th>Descripcion</th>
+                                    <th>Estado</th>
+                                    <th>Campo</th>
+                                    <th>Repuesto</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-secondary"  id="data-container">
+                            </tbody>
+                        </table>
+                        <div class="modal modal-lg fade" id="modalEdicion" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Editar orden de mantenimiento</h5>
+                                    </div>
+                                    <div class="modal-body text-start">
+                                        <form class="row g-3" id="formularioEdicion">
+                                            <input type="hidden" id="mantenimientoIdEdicion">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Equipo</label>
+                                                <select id="selectEquipoEdicion" class="form-select">
+                                                </select>
+                                              </div>
+                                              <div class="col-md-6">
+                                                <label class="form-label">Repuesto</label>
+                                                <select id="selectRepuestoEdicion" class="form-select">
+                                                </select>
+                                              </div>
+                                              <div class="col-md-6">
+                                                  <label class="form-label">Tipo de mantenimiento</label>
+                                                  <select id="tipoMantenimientoEdicion" class="form-select">
+                                                      <option selected>Correctivo</option>
+                                                      <option>Preventivo</option>
+                                                      <option>Proactivo</option>
+                                                      <option>Predictivo</option>
+                                                  </select>
+                                              </div>
+                                              <div class="col-md-6">
+                                                <label class="form-label">Fecha inicio</label>
+                                                <input id="fechaInicioEdicion" type="date" class="form-control">
+                                              </div>
+                                              <div class="col-md-3">
+                                                  <label class="form-label">Estado</label>
+                                                  <input id="estadoEdicion" type="text" class="form-control">
+                                              </div>
+                                              <div class="col-md-6">
+                                                  <label class="form-label">Descripcion</label>
+                                                  <input id="descripcionEdicion" type="text" class="form-control">
+                                              </div>
+                                              <div class="col-md-3">
+                                                  <label class="form-label">Campo</label>
+                                                  <input id="campoEdicion" type="text" class="form-control">
+                                              </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                        <button id="btnActualizarMantenimiento" type="button" class="btn btn-primary">Guardar cambios</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/js/ordenMantenimiento.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

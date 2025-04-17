@@ -1,0 +1,251 @@
+async function cargarTablaMantenimientos() {
+  try {
+    const response = await fetch('/mantenimiento');
+    const mantenimientos = await response.json();
+
+    const tbody = document.getElementById('data-container');
+    tbody.innerHTML = mantenimientos.map(m => `
+      <tr>
+        <td>${m.mantenimiento_id}</td>
+        <td>${m.tipomantenimiento}</td>
+        <td>${m.nombre_equipo}</td>
+        <td>${new Date(m.fecha_creacion).toLocaleDateString()}</td>
+        <td>${m.descripcion}</td>
+        <td><span class="badge ${m.estado === 'Completada' ? 'text-bg-success' : 'text-bg-warning'} p-2">${m.estado}</span></td>
+        <td>${m.campo || 'N/A'}</td>
+        <td>${m.nombre_repuesto || 'N/A'}</td>
+        <td class="actions">
+          <a href="#" class="btn-eliminar" type="button" data-id="${m.mantenimiento_id}"><i class="fas fa-trash text-danger mx-1"></i></a>
+          <a href="#" type="button" class="btn-editar" data-id="${m.mantenimiento_id}" data-bs-toggle="modal" data-bs-target="#modalEdicion"><i class="fas fa-pen text-warning mx-1"></i></a>
+          <a href="#" type="button"><i class="fas fa-check text-success mx-1"></i></a>
+        </td>
+      </tr>
+    `).join('');
+
+  } catch (error) {
+    console.error('Error al cargar mantenimientos:', error);
+    alert('Error al cargar datos');
+  }
+}
+
+document.getElementById('data-container').addEventListener('click', (e) => {
+  const boton = e.target.closest('.btn-eliminar');
+  if (boton) {
+    eliminarMantenimiento(e);
+  }
+});
+
+async function cargarSelectEdicion() {
+  try {
+    const response = await fetch('/datos-formulario');
+    const { equipos, repuestos } = await response.json();
+
+    const selectEquipo = document.getElementById('selectEquipoEdicion');
+    selectEquipo.innerHTML = '<option value="">Seleccione un equipo</option>';
+    equipos.forEach(equipo => {
+      const option = document.createElement('option');
+      option.value = equipo.equipo_id;
+      option.textContent = equipo.nombre;
+      selectEquipo.appendChild(option);
+    });
+
+    const selectRepuesto = document.getElementById('selectRepuestoEdicion');
+    selectRepuesto.innerHTML = '<option value="">Seleccione un repuesto</option>';
+    repuestos.forEach(repuesto => {
+      const option = document.createElement('option');
+      option.value = repuesto.repuesto_id;
+      option.textContent = repuesto.nombre;
+      selectRepuesto.appendChild(option);
+    });
+
+  } catch (error) {
+    console.error('Error al cargar datos para formulario:', error);
+  }
+};
+
+async function cargarSelect() {
+  try {
+    const response = await fetch('/datos-formulario');
+    const { equipos, repuestos } = await response.json();
+
+    const selectEquipo = document.getElementById('selectEquipo');
+    selectEquipo.innerHTML = '<option value="">Seleccione un equipo</option>';
+    equipos.forEach(equipo => {
+      const option = document.createElement('option');
+      option.value = equipo.equipo_id;
+      option.textContent = equipo.nombre;
+      selectEquipo.appendChild(option);
+    });
+
+    const selectRepuesto = document.getElementById('selectRepuesto');
+    selectRepuesto.innerHTML = '<option value="">Seleccione un repuesto</option>';
+    repuestos.forEach(repuesto => {
+      const option = document.createElement('option');
+      option.value = repuesto.repuesto_id;
+      option.textContent = repuesto.nombre;
+      selectRepuesto.appendChild(option);
+    });
+
+  } catch (error) {
+    console.error('Error al cargar datos para formulario:', error);
+  }
+};
+
+document.getElementById('btnOrdenMantenimiento').addEventListener('click', async (e) => {
+  e.preventDefault();
+  
+  try {
+    const formData = {
+      tipomantenimiento: document.getElementById('tipoMantenimiento').value,
+      equipo_id: document.getElementById('selectEquipo').value,
+      fecha_creacion: document.getElementById('fechaInicio').value,
+      descripcion: document.getElementById('descripcion').value,
+      estado: document.getElementById('estado').value,
+      campo: document.getElementById('campo').value,
+      repuesto_id: document.getElementById('selectRepuesto').value || null
+    };
+
+    const response = await fetch('/registro', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formData)
+    });
+
+    const result = await response.json();
+    console.log(result);
+
+    if (result.success) {
+      alert('Mantenimiento registrado con éxito!');
+      document.getElementById('formularioMantenimiento').reset();
+      await cargarTablaMantenimientos();
+    } else {
+      throw new Error(result.error || 'Error desconocido');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Error al registrar el mantenimiento: ' + error.message);
+  }
+});
+
+async function eliminarMantenimiento(event) {
+  event.preventDefault();
+  await cargarSelect();
+  const id = event.currentTarget.getAttribute('data-id');
+  if (!id) return;
+
+  if (!confirm('¿Estás seguro de eliminar esta orden de mantenimiento?')) {
+    return;
+  }
+
+  try {
+    const response = await fetch(`/eliminar/${id}`, {
+      method: 'DELETE'
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      alert('Orden eliminada correctamente');
+      event.target.closest('tr').remove();
+    } else {
+      throw new Error(result.error || 'Error al eliminar');
+    }
+  } catch (error) {
+    console.error('Error al eliminar:', error);
+    alert('Error al eliminar la orden: ' + error.message);
+  }
+};
+
+async function cargarEdicion(mantenimientoId) {
+  try {
+    const response = await fetch(`/actualizar/${mantenimientoId}`);
+    
+    if (!response.ok) {
+      throw new Error(`Error HTTP: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('Datos de mantenimiento:', data);
+    
+    if (!data || !data.mantenimiento_id) {
+      throw new Error('Datos de mantenimiento no válidos');
+    }
+
+    document.getElementById('mantenimientoIdEdicion').value = data.mantenimiento_id;
+    document.getElementById('selectEquipoEdicion').value = data.equipo_id;
+    document.getElementById('selectRepuestoEdicion').value = data.repuesto_id || '';
+    document.getElementById('tipoMantenimientoEdicion').value = data.tipomantenimiento;
+    document.getElementById('fechaInicioEdicion').value = data.fecha_creacion.split('T')[0];
+    document.getElementById('estadoEdicion').value = data.estado;
+    document.getElementById('descripcionEdicion').value = data.descripcion;
+    document.getElementById('campoEdicion').value = data.campo || '';
+    await cargarSelectEdicion();
+    document.getElementById('selectEquipoEdicion').value = data.equipo_id;
+    document.getElementById('selectRepuestoEdicion').value = data.repuesto_id || '';
+    
+  } catch (error) {
+    console.error('Error al cargar datos:', error);
+    alert('Error al cargar datos: ' + error.message);
+  }
+};
+
+document.getElementById('btnActualizarMantenimiento').addEventListener('click', async () => {
+  try {
+    const mantenimientoId = document.getElementById('mantenimientoIdEdicion').value;
+    
+    const formData = {
+      tipomantenimiento: document.getElementById('tipoMantenimientoEdicion').value,
+      equipo_id: document.getElementById('selectEquipoEdicion').value,
+      fecha_creacion: document.getElementById('fechaInicioEdicion').value,
+      descripcion: document.getElementById('descripcionEdicion').value,
+      estado: document.getElementById('estadoEdicion').value,
+      campo: document.getElementById('campoEdicion').value,
+      repuesto_id: document.getElementById('selectRepuestoEdicion').value || null
+    };
+
+    const response = await fetch(`/actualizar/${mantenimientoId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formData)
+    });
+
+    const result = await response.json();
+    console.log('Resultado de la actualización:', result); // Para depuración
+
+    if (!response.ok) {
+      throw new Error(result.error || 'Error en la solicitud');
+    }
+
+    // Usamos un alert tradicional
+    alert('¡Éxito! Los cambios han sido guardados correctamente.');
+
+    // Cerrar el modal y recargar la tabla
+    bootstrap.Modal.getInstance(document.getElementById('modalEdicion')).hide();
+    await cargarTablaMantenimientos();
+    
+  } catch (error) {
+    console.error('Error:', error);
+    alert(`Error: ${error.message}`); // Mostrar el error
+  }
+});
+
+document.addEventListener('click', async (e) => {
+  if (e.target.matches('.btn-editar') || e.target.closest('.btn-editar')) {
+    const btn = e.target.closest('.btn-editar');
+    const mantenimientoId = btn.getAttribute('data-id');
+    console.log('ID del mantenimiento seleccionado:', mantenimientoId);
+  
+    if (mantenimientoId) {
+      await cargarEdicion(mantenimientoId);
+    }
+  }
+});
+
+document.addEventListener('DOMContentLoaded', async () => {
+  await cargarTablaMantenimientos();
+  await cargarSelect();
+});
