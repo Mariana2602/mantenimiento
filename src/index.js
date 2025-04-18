@@ -2,7 +2,7 @@ import express from 'express'
 import morgan from 'morgan'
 import {join, dirname} from 'path'
 import { fileURLToPath } from 'url'
-import { listarMantenimientos, obtenerEquiposRepuestos, registrarMantenimiento, eliminarMantenimiento, obtenerMantenimientoEdicion, actualizarMantenimientoController } from './controllers/ordenMantenimientoController.js'
+import { listarMantenimientos, obtenerEquiposRepuestos, registrarMantenimiento, eliminarMantenimiento, obtenerMantenimientoEdicion, actualizarMantenimientoController, crearOrdenTrabajoController } from './controllers/ordenMantenimientoController.js'
 import { listarEquipos } from './controllers/equipoMantenimientoController.js'
 
 const app = express();
@@ -20,7 +20,7 @@ app.use('/registro', registrarMantenimiento);
 app.use('/eliminar/:id', eliminarMantenimiento);
 app.use('/actualizar/:id', obtenerMantenimientoEdicion);
 app.use('/enviar/:id', actualizarMantenimientoController);
-
+app.use('/orden-trabajo', crearOrdenTrabajoController)
 app.use('/equipos', listarEquipos);
 
 app.get('/', (req, res) => {

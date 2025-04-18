@@ -142,7 +142,7 @@
                         <table class="table table-striped text-center" id="ordenes-mantenimiento">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
+                                    <th>Nº</th>
                                     <th>Tipo</th>
                                     <th>Equipo</th>
                                     <th>Fecha</th>
@@ -155,7 +155,10 @@
                             </thead>
                             <tbody class="text-secondary"  id="data-container">
                             </tbody>
-                        </table>
+                        </table> 
+                        
+                        <!-- MODAL PARA EDICION DE SOLICITUDES DE SERVICIO -->
+
                         <div class="modal modal-lg fade" id="modalEdicion" tabindex="-1" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
@@ -209,6 +212,109 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- MODAL PARA REALIZAR ORDEN DE TRABAJO -->
+
+                        <div class="modal modal-lg fade" id="modalOrdenTrabajo" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Realizar orden de trabajo</h5>
+                                    </div>
+                                    <div class="modal-body text-start">
+                                        <form class="row g-3" id="formularioEdicion">
+                                            <input type="hidden" id="mantenimientoIdEdicion">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Equipo</label>
+                                                <select id="selectEquipoEdicion" class="form-select" disabled>
+                                                </select>
+                                              </div>
+                                              <div class="col-md-6">
+                                                <label class="form-label">Repuesto</label>
+                                                <select id="selectRepuestoEdicion" class="form-select" disabled>
+                                                </select>
+                                              </div>
+                                              <div class="col-md-6">
+                                                  <label class="form-label">Tipo de mantenimiento</label>
+                                                  <select id="tipoMantenimientoEdicion" class="form-select" disabled>
+                                                      <option selected>Correctivo</option>
+                                                      <option>Preventivo</option>
+                                                      <option>Proactivo</option>
+                                                      <option>Predictivo</option>
+                                                  </select>
+                                              </div>
+                                              <div class="col-md-6">
+                                                <label class="form-label">Fecha creacion</label>
+                                                <input id="fechaInicioEdicion" type="date" class="form-control" disabled>
+                                              </div>
+                                              <div class="col-md-3">
+                                                  <label class="form-label">Estado</label>
+                                                  <input id="estadoEdicion" type="text" class="form-control" value="En proceso" disabled>
+                                              </div>
+                                              <div class="col-md-6">
+                                                  <label class="form-label">Descripcion</label>
+                                                  <input id="descripcionEdicion" type="text" class="form-control" disabled>
+                                              </div>
+                                              <div class="col-md-3">
+                                                  <label class="form-label">Campo</label>
+                                                  <input id="campoEdicion" type="text" class="form-control" disabled>
+                                              </div>
+                                        </form>
+                                        <hr>
+                                        <form class="row g-3" id="formOrdenTrabajo">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Personal asignado</label>
+                                                <select id="personalMantenimiento" class="form-select">
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Prioridad</label>
+                                                <select id="prioridadTrabajo" class="form-select">
+                                                    <option selected>Media</option>
+                                                    <option>Alta</option>
+                                                    <option>Baja</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Fecha ejecucion</label>
+                                                <input id="fechaInicioTrabajo" type="date" class="form-control">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Fecha fin</label>
+                                                <input id="fechaFinTrabajo" type="date" class="form-control">
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                        <button id="btnOrdenTrabajo" type="button" class="btn btn-primary">Generar orden de trabajo</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="col-md-12 mt-4">
+                    <div class="p-4 bg-white rounded-2 shadow">
+                        <p class="fs-2 m-0 fw-bold">Ordenes de trabajo</p>
+                        <hr>
+                        <table class="table table-striped text-center" id="ordenes-mantenimiento">
+                            <thead>
+                                <tr>
+                                    <th>Nº</th>
+                                    <th>Mantenimiento</th>
+                                    <th>Empleado</th>
+                                    <th>Fecha Ejecucion</th>
+                                    <th>Fecha Fin</th>
+                                    <th>Prioridad</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-secondary"  id="datos-ordenes-trabajo">
+                            </tbody>
+                        </table> 
                     </div>
                 </div>
             </div>

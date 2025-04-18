@@ -1,10 +1,12 @@
+import connection from "../database.js";
 import { obtenerMantenimientos, 
          obtenerEquipos, 
          obtenerRepuestos, 
          crearOrdenMantenimiento, 
          eliminarOrdenMantenimiento, 
          obtenerIdEdicion,
-         actualizarMantenimiento } 
+         actualizarMantenimiento,
+         crearOrdenTrabajo } 
          from "../models/ordenMantenimientoModel.js";
 
 export const listarMantenimientos = async (req, res) => {
@@ -149,5 +151,24 @@ export const actualizarMantenimientoController = async (req, res) => {
       error: 'Error interno del servidor',
       details: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
+  }
+};
+
+export const crearOrdenTrabajoController = async (req, res) => {
+  try {
+    const datos = req.body;
+    const resultado = await crearOrdenTrabajo(datos);
+
+    const updateQuery = `UPDATE mantenimiento_equipos SET estado = 'En proceso' WHERE mantenimiento_id = ?`;
+    connection.query(updateQuery, [datos.mantenimiento_id], (error) => {
+      if (error) {
+        console.error('Error al actualizar el estado del mantenimiento:', error);
+      }
+    });
+
+    res.status(201).json({ message: 'Orden de trabajo creada exitosamente', ordenId: resultado.insertId });
+  } catch (err) {
+    console.error('Error al crear orden de trabajo:', err);
+    res.status(500).json({ error: 'Error del servidor' });
   }
 };

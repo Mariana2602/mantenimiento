@@ -1,5 +1,11 @@
 import { Router } from 'express';
-import { listarMantenimientos, obtenerEquiposRepuestos, registrarMantenimiento, eliminarMantenimiento, obtenerMantenimientoEdicion, actualizarMantenimientoController } from '../controllers/ordenMantenimientoController.js';
+import { listarMantenimientos, 
+         obtenerEquiposRepuestos, 
+         registrarMantenimiento, 
+         eliminarMantenimiento, 
+         obtenerMantenimientoEdicion, 
+         actualizarMantenimientoController,
+         crearOrdenTrabajoController } from '../controllers/ordenMantenimientoController.js';
 
 const router = Router();
 
@@ -9,5 +15,6 @@ router.post('/registro', registrarMantenimiento);
 router.delete('/eliminar/:id', eliminarMantenimiento);
 router.get('/actualizar/:id', obtenerMantenimientoEdicion);
 router.put('/enviar/:id', actualizarMantenimientoController);
+router.post('/orden-trabajo', crearOrdenTrabajoController);
 
 export default router;

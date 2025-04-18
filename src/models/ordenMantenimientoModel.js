@@ -145,3 +145,22 @@ export const actualizarMantenimiento = (id, datos) => {
     );
   });
 };
+
+export const crearOrdenTrabajo = (datos) => {
+  return new Promise((resolve, reject) => {
+    const { mantenimiento_id, empleado_id, fecha_ejecucion, fecha_fin, prioridad } = datos;
+
+    const query = `
+      INSERT INTO ordenes_trabajo (mantenimiento_id, empleado_id, fecha_ejecucion, fecha_fin, prioridad)
+      VALUES (?, ?, ?, ?, ?)
+    `;
+
+    connection.query(query, [mantenimiento_id, empleado_id, fecha_ejecucion, fecha_fin, prioridad], (err, result) => {
+      if (err) {
+        console.error('Error al insertar orden de trabajo:', err);
+        return reject(err);
+      }
+      resolve({ success: true, insertId: result.insertId });
+    });
+  });
+};

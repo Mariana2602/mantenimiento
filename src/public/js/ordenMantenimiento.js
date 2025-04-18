@@ -240,3 +240,73 @@ document.addEventListener('DOMContentLoaded', async () => {
   await cargarTablaMantenimientos();
   await cargarSelect();
 });
+
+// ORDENES DE TRABAJO
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('btnOrdenTrabajo').addEventListener('click', async () => {
+    try {
+      const mantenimiento_id = document.getElementById('mantenimientoIdEdicion').value;
+      const empleado_id = document.getElementById('personalMantenimiento').value;
+      const fecha_ejecucion = document.getElementById('fechaInicioTrabajo').value;
+      const fecha_fin = document.getElementById('fechaFinTrabajo').value;
+      const prioridad = document.getElementById('prioridadTrabajo').value;
+      const datos = {
+        mantenimiento_id,
+        empleado_id,
+        fecha_ejecucion,
+        fecha_fin,
+        prioridad
+      };
+
+      const response = await fetch('/orden-trabajo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(datos)
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert('¡Orden de trabajo generada correctamente!');
+        bootstrap.Modal.getInstance(document.getElementById('modalOrdenTrabajo')).hide();
+        await cargarTablaOrdenes();
+      } else {
+        alert(`Error: ${result.error}`);
+      }
+    } catch (error) {
+      console.error('Error al generar la orden de trabajo:', error);
+      alert('Error al generar la orden de trabajo');
+    }
+  });
+});
+
+async function cargarTablaOrdenes() {
+  try {
+    const response = await fetch('/ordenes-trabajo');
+    const ordenes = await response.json();
+
+    const container = document.getElementById('datos-ordenes-trabajo');
+    container.innerHTML = '';
+
+    ordenes.forEach((orden, index) => {
+      const badgeColor = orden.estado === 'En proceso' ? 'bg-warning text-dark' : 'bg-secondary';
+
+      const fila = `
+        <tr>
+          <td>${index + 1}</td>
+          <td>${orden.nombre_equipo}</td>
+          <td>${orden.nombre_empleado}</td>
+          <td>${orden.fecha_ejecucion.split('T')[0]}</td>
+          <td>${orden.fecha_fin.split('T')[0]}</td>
+          <td><span class="badge ${badgeColor}">${orden.prioridad}</span></td>
+          <td><span class="badge ${badgeColor}">${orden.estado}</span></td>
+        </tr>
+      `;
+      container.innerHTML += fila;
+    });
+
+  } catch (error) {
+    console.error('Error al cargar la tabla de órdenes:', error);
+  }
+}
