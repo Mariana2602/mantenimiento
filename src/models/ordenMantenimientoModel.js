@@ -146,21 +146,65 @@ export const actualizarMantenimiento = (id, datos) => {
   });
 };
 
+
+// TABLA DE ORDENES DE TRABAJO
+
+export const obteneroOrdenesTrabajo = () => {
+  return new Promise((resolve, reject) => {
+    const query = `
+      select  ot.orden_id,
+		    eq.nombre as mantenimiento,
+        e.nombre as personal,
+        ot.fecha_ejecucion,
+        ot.fecha_fin,
+        ot.prioridad
+	    from ordenes_trabajo ot 
+        left join mantenimiento_equipos me on ot.mantenimiento_id = me.mantenimiento_id
+        left join empleados e on ot.empleado_id = e.empleado_id
+        left join equipos eq on me.equipo_id = eq.equipo_id`;
+    
+    connection.query(query, (error, results, fields) => {
+      if (error) {
+        console.error('Error en la consulta SQL:', error);
+        return reject({
+          message: 'Error al obtener mantenimientos',
+          status: 500,
+          sqlError: error.message
+        });
+      }
+      resolve(results || []); 
+    });
+  });
+};
+
 export const crearOrdenTrabajo = (datos) => {
   return new Promise((resolve, reject) => {
-    const { mantenimiento_id, empleado_id, fecha_ejecucion, fecha_fin, prioridad } = datos;
-
     const query = `
       INSERT INTO ordenes_trabajo (mantenimiento_id, empleado_id, fecha_ejecucion, fecha_fin, prioridad)
       VALUES (?, ?, ?, ?, ?)
     `;
 
-    connection.query(query, [mantenimiento_id, empleado_id, fecha_ejecucion, fecha_fin, prioridad], (err, result) => {
-      if (err) {
-        console.error('Error al insertar orden de trabajo:', err);
-        return reject(err);
-      }
-      resolve({ success: true, insertId: result.insertId });
+    const values = [
+      datos.mantenimiento_id,
+      datos.empleado_id,
+      datos.fecha_ejecucion,
+      datos.fecha_fin,
+      datos.prioridad || 'En proceso',
+    ];
+
+    connection.query(query, values, (error, results) => {
+      if (error) return reject(error);
+      resolve(results.insertId);
+    });
+  });
+};
+
+export const obtenerEmpleado = () => {
+  return new Promise((resolve, reject) => {
+    const query = 'SELECT empleado_id, nombre FROM empleados';
+    connection.query(query, (error, results) => {
+      if (error) return reject(error);
+      resolve(results);
     });
   });
 };

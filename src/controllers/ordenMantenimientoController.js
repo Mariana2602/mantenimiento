@@ -6,7 +6,8 @@ import { obtenerMantenimientos,
          eliminarOrdenMantenimiento, 
          obtenerIdEdicion,
          actualizarMantenimiento,
-         crearOrdenTrabajo } 
+         crearOrdenTrabajo,
+         obtenerEmpleado } 
          from "../models/ordenMantenimientoModel.js";
 
 export const listarMantenimientos = async (req, res) => {
@@ -23,6 +24,18 @@ export const listarMantenimientos = async (req, res) => {
       success: false,
       error: error.message || 'Error al obtener datos',
       details: process.env.NODE_ENV === 'development' ? error : undefined
+    });
+  }
+};
+
+export const obtenerEmpleadoController = async (req, res) => {
+  try {
+    const empleado = await obtenerEmpleado();
+    res.json(empleado);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: 'Error al obtener nombre del empleado'
     });
   }
 };
@@ -56,13 +69,6 @@ export const registrarMantenimiento = async (req, res) => {
       campo, 
       repuesto_id 
     } = req.body;
-
-    if (!equipo_id || !fecha_creacion) {
-      return res.status(400).json({
-        success: false,
-        error: 'Faltan campos requeridos'
-      });
-    }
 
     const datosMantenimiento = {
       tipomantenimiento,
@@ -154,7 +160,7 @@ export const actualizarMantenimientoController = async (req, res) => {
   }
 };
 
-export const crearOrdenTrabajoController = async (req, res) => {
+export const crearOr = async (req, res) => {
   try {
     const datos = req.body;
     const resultado = await crearOrdenTrabajo(datos);
@@ -170,5 +176,17 @@ export const crearOrdenTrabajoController = async (req, res) => {
   } catch (err) {
     console.error('Error al crear orden de trabajo:', err);
     res.status(500).json({ error: 'Error del servidor' });
+  }
+};
+
+export const crearOrdenTrabajoController = async (req, res) => {
+  try {
+    const datos = req.body;
+    const ordenId = await crearOrdenTrabajo(datos);
+    res.json({ success: true, ordenId });
+    
+  } catch (error) {
+    console.error('Error al crear la orden de trabajo:', error);
+    res.status(500).json({ success: false, error: 'Error del servidor' });
   }
 };

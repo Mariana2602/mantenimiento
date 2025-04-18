@@ -239,6 +239,7 @@ document.addEventListener('click', async (e) => {
 document.addEventListener('DOMContentLoaded', async () => {
   await cargarTablaMantenimientos();
   await cargarSelect();
+  await selectEmpleadosOrden();
 });
 
 // ORDENES DE TRABAJO
@@ -281,32 +282,59 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-async function cargarTablaOrdenes() {
+async function selectEmpleadosOrden() {
   try {
-    const response = await fetch('/ordenes-trabajo');
-    const ordenes = await response.json();
+    const response = await fetch('/empleado-orden');
+    const empleado = await response.json();
 
-    const container = document.getElementById('datos-ordenes-trabajo');
-    container.innerHTML = '';
-
-    ordenes.forEach((orden, index) => {
-      const badgeColor = orden.estado === 'En proceso' ? 'bg-warning text-dark' : 'bg-secondary';
-
-      const fila = `
-        <tr>
-          <td>${index + 1}</td>
-          <td>${orden.nombre_equipo}</td>
-          <td>${orden.nombre_empleado}</td>
-          <td>${orden.fecha_ejecucion.split('T')[0]}</td>
-          <td>${orden.fecha_fin.split('T')[0]}</td>
-          <td><span class="badge ${badgeColor}">${orden.prioridad}</span></td>
-          <td><span class="badge ${badgeColor}">${orden.estado}</span></td>
-        </tr>
-      `;
-      container.innerHTML += fila;
+    const selectEmpleado = document.getElementById('selectPersonalMantenimiento');
+    selectEmpleado.innerHTML = '<option value="">Seleccione un empleado</option>';
+    empleado.forEach(empleados => {
+      const option = document.createElement('option');
+      option.value = empleados.empleado_id;
+      option.textContent = empleados.nombre;
+      selectEmpleado.appendChild(option);
     });
 
   } catch (error) {
-    console.error('Error al cargar la tabla de órdenes:', error);
+    console.error('Error al cargar datos para formulario:', error);
   }
-}
+};
+
+document.getElementById('btnOrdenTrabajo').addEventListener('click', async () => {
+  const mantenimientoId = document.getElementById('mantenimientoIdEdicion').value;
+  const empleadoId = document.getElementById('selectPersonalMantenimiento').value;
+  const fechaEjecucion = document.getElementById('fechaInicioTrabajo').value;
+  const fechaFin = document.getElementById('fechaFinTrabajo').value;
+  const prioridad = document.getElementById('prioridadTrabajo').value;
+
+  const datos = {
+    mantenimiento_id: mantenimientoId,
+    empleado_id: empleadoId,
+    fecha_ejecucion: fechaEjecucion,
+    fecha_fin: fechaFin,
+    prioridad: prioridad
+  };
+
+  try {
+    const response = await fetch('/crear-orden', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(datos)
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      alert('Orden de trabajo creada exitosamente');
+      $('#modalOrdenTrabajo').modal('hide');
+    } else {
+      alert('Error al crear orden: ' + result.error);
+    }
+  } catch (error) {
+    console.error('Error en la solicitud:', error);
+    alert('Ocurrió un error al enviar la orden');
+  }
+});

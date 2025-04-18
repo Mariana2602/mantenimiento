@@ -2,8 +2,15 @@ import express from 'express'
 import morgan from 'morgan'
 import {join, dirname} from 'path'
 import { fileURLToPath } from 'url'
-import { listarMantenimientos, obtenerEquiposRepuestos, registrarMantenimiento, eliminarMantenimiento, obtenerMantenimientoEdicion, actualizarMantenimientoController, crearOrdenTrabajoController } from './controllers/ordenMantenimientoController.js'
-import { listarEquipos } from './controllers/equipoMantenimientoController.js'
+import { listarMantenimientos, 
+         obtenerEquiposRepuestos, 
+         registrarMantenimiento, 
+         eliminarMantenimiento, 
+         obtenerMantenimientoEdicion, 
+         actualizarMantenimientoController, 
+         crearOrdenTrabajoController, 
+         obtenerEmpleadoController} 
+        from './controllers/ordenMantenimientoController.js'
 
 const app = express();
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -20,8 +27,8 @@ app.use('/registro', registrarMantenimiento);
 app.use('/eliminar/:id', eliminarMantenimiento);
 app.use('/actualizar/:id', obtenerMantenimientoEdicion);
 app.use('/enviar/:id', actualizarMantenimientoController);
-app.use('/orden-trabajo', crearOrdenTrabajoController)
-app.use('/equipos', listarEquipos);
+app.use('/orden-trabajo', crearOrdenTrabajoController);
+app.use('/empleado-orden', obtenerEmpleadoController);
 
 app.get('/', (req, res) => {
     res.sendFile(join(__dirname, 'public', 'index.html'));
