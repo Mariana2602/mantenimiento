@@ -15,9 +15,9 @@ async function cargarTablaMantenimientos() {
         <td>${m.campo || 'N/A'}</td>
         <td>${m.nombre_repuesto || 'N/A'}</td>
         <td class="actions">
-          <a href="#" class="btn-eliminar" type="button" data-id="${m.mantenimiento_id}"><i class="fas fa-trash text-danger mx-1"></i></a>
-          <a href="#" type="button" class="btn-editar" data-id="${m.mantenimiento_id}" data-bs-toggle="modal" data-bs-target="#modalEdicion"><i class="fas fa-pen text-warning mx-1"></i></a>
-          <a href="#" type="button"><i class="fas fa-check text-success mx-1"></i></a>
+          <a href="#" class="btn-eliminar" data-id="${m.mantenimiento_id}"><i class="fas fa-trash text-danger mx-1"></i></a>
+          <a href="#" class="btn-editar" data-id="${m.mantenimiento_id}" data-bs-toggle="modal" data-bs-target="#modalEdicion"><i class="fas fa-pen text-warning mx-1"></i></a>
+          <a href="#"><i class="fas fa-check text-success mx-1"></i></a>
         </td>
       </tr>
     `).join('');
@@ -30,9 +30,9 @@ async function cargarTablaMantenimientos() {
 
 document.getElementById('data-container').addEventListener('click', (e) => {
   const boton = e.target.closest('.btn-eliminar');
-  if (boton) {
-    eliminarMantenimiento(e);
-  }
+  console.log(boton);
+  if (!boton) return;
+  eliminarMantenimiento(boton);
 });
 
 async function cargarSelectEdicion() {
@@ -129,10 +129,8 @@ document.getElementById('btnOrdenMantenimiento').addEventListener('click', async
   }
 });
 
-async function eliminarMantenimiento(event) {
-  event.preventDefault();
-  await cargarSelect();
-  const id = event.currentTarget.getAttribute('data-id');
+async function eliminarMantenimiento(boton) {
+  const id = boton.getAttribute('data-id');
   if (!id) return;
 
   if (!confirm('¿Estás seguro de eliminar esta orden de mantenimiento?')) {
@@ -148,7 +146,7 @@ async function eliminarMantenimiento(event) {
 
     if (result.success) {
       alert('Orden eliminada correctamente');
-      event.target.closest('tr').remove();
+      boton.closest('tr').remove();
     } else {
       throw new Error(result.error || 'Error al eliminar');
     }
@@ -156,7 +154,7 @@ async function eliminarMantenimiento(event) {
     console.error('Error al eliminar:', error);
     alert('Error al eliminar la orden: ' + error.message);
   }
-};
+}
 
 async function cargarEdicion(mantenimientoId) {
   try {
@@ -214,22 +212,20 @@ document.getElementById('btnActualizarMantenimiento').addEventListener('click', 
     });
 
     const result = await response.json();
-    console.log('Resultado de la actualización:', result); // Para depuración
+    console.log('Resultado de la actualización:', result);
 
     if (!response.ok) {
       throw new Error(result.error || 'Error en la solicitud');
     }
 
-    // Usamos un alert tradicional
     alert('¡Éxito! Los cambios han sido guardados correctamente.');
 
-    // Cerrar el modal y recargar la tabla
     bootstrap.Modal.getInstance(document.getElementById('modalEdicion')).hide();
     await cargarTablaMantenimientos();
     
   } catch (error) {
     console.error('Error:', error);
-    alert(`Error: ${error.message}`); // Mostrar el error
+    alert(`Error: ${error.message}`); 
   }
 });
 
