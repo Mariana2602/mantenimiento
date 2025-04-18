@@ -11,13 +11,13 @@ async function cargarTablaMantenimientos() {
         <td>${m.nombre_equipo}</td>
         <td>${new Date(m.fecha_creacion).toLocaleDateString()}</td>
         <td>${m.descripcion}</td>
-        <td><span class="badge ${m.estado === 'Completada' ? 'text-bg-success' : 'text-bg-warning'} p-2">${m.estado}</span></td>
+        <td><span class="badge ${m.estado === 'Completada' ? 'text-bg-success' : 'text-bg-secondary'} p-2">${m.estado}</span></td>
         <td>${m.campo || 'N/A'}</td>
         <td>${m.nombre_repuesto || 'N/A'}</td>
         <td class="actions">
           <a href="#" class="btn-eliminar" data-id="${m.mantenimiento_id}"><i class="fas fa-trash text-danger mx-1"></i></a>
           <a href="#" class="btn-editar" data-id="${m.mantenimiento_id}" data-bs-toggle="modal" data-bs-target="#modalEdicion"><i class="fas fa-pen text-warning mx-1"></i></a>
-          <a href="#"><i class="fas fa-check text-success mx-1"></i></a>
+          <a href="#" class="btn-editar" data-id="${m.mantenimiento_id}" data-bs-toggle="modal" data-bs-target="#modalOrdenTrabajo"><i class="fas fa-check text-success mx-1"></i></a>
         </td>
       </tr>
     `).join('');
