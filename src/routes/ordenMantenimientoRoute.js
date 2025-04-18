@@ -8,6 +8,6 @@ router.get('/datos-formulario', obtenerEquiposRepuestos);
 router.post('/registro', registrarMantenimiento);
 router.delete('/eliminar/:id', eliminarMantenimiento);
 router.get('/actualizar/:id', obtenerMantenimientoEdicion);
-router.put('/actualizar/:id', actualizarMantenimientoController);
+router.put('/enviar/:id', actualizarMantenimientoController);
 
 export default router;

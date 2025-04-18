@@ -136,11 +136,16 @@ export const actualizarMantenimientoController = async (req, res) => {
 
   try {
     const result = await actualizarMantenimiento(id, datos);
-    console.log('Resultado de la actualización:', result);
-    res.status(200).json(result);
+    console.log('Resultado de la actualización:', result);  // Ver qué devuelve la función de actualización
+    
+    if (result.success) {
+      return res.status(200).json(result);  // Si la actualización fue exitosa
+    } else {
+      throw new Error('La actualización no se realizó correctamente'); // Si no fue exitosa
+    }
   } catch (error) {
     console.error('Error al actualizar el mantenimiento:', error);
-    res.status(500).json({
+    return res.status(500).json({
       error: 'Error interno del servidor',
       details: process.env.NODE_ENV === 'development' ? error.message : undefined
     });

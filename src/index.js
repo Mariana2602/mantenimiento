@@ -19,7 +19,7 @@ app.use('/datos-formulario', obtenerEquiposRepuestos);
 app.use('/registro', registrarMantenimiento);
 app.use('/eliminar/:id', eliminarMantenimiento);
 app.use('/actualizar/:id', obtenerMantenimientoEdicion);
-app.use('/actualizar/:id', actualizarMantenimientoController);
+app.use('/enviar/:id', actualizarMantenimientoController);
 
 app.use('/equipos', listarEquipos);
 

@@ -172,16 +172,14 @@ async function cargarEdicion(mantenimientoId) {
     }
 
     document.getElementById('mantenimientoIdEdicion').value = data.mantenimiento_id;
-    document.getElementById('selectEquipoEdicion').value = data.equipo_id;
-    document.getElementById('selectRepuestoEdicion').value = data.repuesto_id || '';
     document.getElementById('tipoMantenimientoEdicion').value = data.tipomantenimiento;
-    document.getElementById('fechaInicioEdicion').value = data.fecha_creacion.split('T')[0];
+    document.getElementById('fechaInicioEdicion').value = data.fecha_creacion;
     document.getElementById('estadoEdicion').value = data.estado;
     document.getElementById('descripcionEdicion').value = data.descripcion;
-    document.getElementById('campoEdicion').value = data.campo || '';
+    document.getElementById('campoEdicion').value = data.campo;
     await cargarSelectEdicion();
     document.getElementById('selectEquipoEdicion').value = data.equipo_id;
-    document.getElementById('selectRepuestoEdicion').value = data.repuesto_id || '';
+    document.getElementById('selectRepuestoEdicion').value = data.repuesto_id;
     
   } catch (error) {
     console.error('Error al cargar datos:', error);
@@ -189,43 +187,40 @@ async function cargarEdicion(mantenimientoId) {
   }
 };
 
-document.getElementById('btnActualizarMantenimiento').addEventListener('click', async () => {
+document.getElementById('btnActualizarMantenimiento').addEventListener('click', async (e) => {
+  e.preventDefault();
   try {
     const mantenimientoId = document.getElementById('mantenimientoIdEdicion').value;
-    
+
     const formData = {
       tipomantenimiento: document.getElementById('tipoMantenimientoEdicion').value,
-      equipo_id: document.getElementById('selectEquipoEdicion').value,
-      fecha_creacion: document.getElementById('fechaInicioEdicion').value,
+      equipo_id: document.getElementById('selectEquipoEdicion').value || null,
+      fecha_creacion: document.getElementById('fechaInicioEdicion').value || null,
       descripcion: document.getElementById('descripcionEdicion').value,
       estado: document.getElementById('estadoEdicion').value,
       campo: document.getElementById('campoEdicion').value,
       repuesto_id: document.getElementById('selectRepuestoEdicion').value || null
     };
 
-    const response = await fetch(`/actualizar/${mantenimientoId}`, {
+    const response = await fetch(`/enviar/${mantenimientoId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(formData)
     });
-
     const result = await response.json();
-    console.log('Resultado de la actualización:', result);
 
-    if (!response.ok) {
-      throw new Error(result.error || 'Error en la solicitud');
+    if (response.ok) {
+      alert('¡Éxito! Los cambios han sido guardados correctamente.');
+      bootstrap.Modal.getInstance(document.getElementById('modalEdicion')).hide();
+      await cargarTablaMantenimientos();
+    } else {
+      alert(`Error: ${result.error || 'No se pudieron guardar los cambios'}`);
     }
-
-    alert('¡Éxito! Los cambios han sido guardados correctamente.');
-
-    bootstrap.Modal.getInstance(document.getElementById('modalEdicion')).hide();
-    await cargarTablaMantenimientos();
-    
   } catch (error) {
     console.error('Error:', error);
-    alert(`Error: ${error.message}`); 
+    alert(`Error: ${error.message}`);
   }
 });
 

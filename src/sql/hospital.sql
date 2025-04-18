@@ -175,7 +175,6 @@ CREATE TABLE ordenes_trabajo (
     fecha_ejecucion DATETIME,
     fecha_fin DATETIME,
     prioridad VARCHAR(255),
-    estado VARCHAR(255),
     FOREIGN KEY (empleado_id) REFERENCES empleados(empleado_id),
     FOREIGN KEY (mantenimiento_id) REFERENCES mantenimiento_equipos(mantenimiento_id)
 );

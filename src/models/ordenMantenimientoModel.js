@@ -108,23 +108,19 @@ export const actualizarMantenimiento = (id, datos) => {
     const {
       tipomantenimiento,
       equipo_id,
-      empleado_id,
-      fecha_inicio,
-      fecha_fin,
+      fecha_creacion,
       descripcion,
       estado,
-      observaciones,
       campo,
       repuesto_id
     } = datos;
 
     const query = `
-       UPDATE mantenimiento_equipos
+      UPDATE mantenimiento_equipos
       SET 
         tipomantenimiento = ?,
         equipo_id = ?,
         fecha_creacion = ?,
-        fecha_fin = ?,
         descripcion = ?,
         estado = ?,
         campo = ?,
@@ -133,15 +129,15 @@ export const actualizarMantenimiento = (id, datos) => {
     `;
 
     connection.query(
-      query, 
-      [tipomantenimiento, equipo_id, empleado_id, fecha_inicio, fecha_fin, descripcion, estado, observaciones, campo, repuesto_id, id],
+      query,
+      [tipomantenimiento, equipo_id, fecha_creacion, descripcion, estado, campo, repuesto_id, id],
       (error, results) => {
         if (error) {
-          console.error('Error en la consulta SQL:', error); // Agregado para depurar
+          console.error('Error en la consulta SQL:', error);
           return reject(error);
         }
         if (results.affectedRows === 0) {
-          console.log('No se encontró el mantenimiento con ID:', id); // Agregado para depurar
+          console.log('No se encontró el mantenimiento con ID:', id);
           return reject(new Error('Mantenimiento no encontrado o no actualizado'));
         }
         resolve({ success: true, updated: results });
