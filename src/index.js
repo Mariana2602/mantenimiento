@@ -9,7 +9,9 @@ import { listarMantenimientos,
          obtenerMantenimientoEdicion, 
          actualizarMantenimientoController, 
          crearOrdenTrabajoController, 
-         obtenerEmpleadoController} 
+         obtenerEmpleadoController,
+         ordenesTrabajoController,
+         eliminarOrdenTrabajoController} 
         from './controllers/ordenMantenimientoController.js'
 
 const app = express();
@@ -27,8 +29,10 @@ app.use('/registro', registrarMantenimiento);
 app.use('/eliminar/:id', eliminarMantenimiento);
 app.use('/actualizar/:id', obtenerMantenimientoEdicion);
 app.use('/enviar/:id', actualizarMantenimientoController);
-app.use('/orden-trabajo', crearOrdenTrabajoController);
 app.use('/empleado-orden', obtenerEmpleadoController);
+app.use('/obtenerOrdenesTrabajo', ordenesTrabajoController);
+app.use('/crear-orden', crearOrdenTrabajoController);
+app.use('/eliminarOrdenTrabajo/:id', eliminarOrdenTrabajoController);
 
 app.get('/', (req, res) => {
     res.sendFile(join(__dirname, 'public', 'index.html'));

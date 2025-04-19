@@ -6,7 +6,9 @@ import { listarMantenimientos,
          obtenerMantenimientoEdicion, 
          actualizarMantenimientoController,
          crearOrdenTrabajoController,
-         obtenerEmpleadoController} from '../controllers/ordenMantenimientoController.js';
+         obtenerEmpleadoController,
+         ordenesTrabajoController,
+         eliminarOrdenTrabajoController} from '../controllers/ordenMantenimientoController.js';
 
 const router = Router();
 
@@ -18,5 +20,7 @@ router.get('/actualizar/:id', obtenerMantenimientoEdicion);
 router.put('/enviar/:id', actualizarMantenimientoController);
 router.get('/empleado-orden', obtenerEmpleadoController);
 router.post('/crear-orden', crearOrdenTrabajoController);
+router.get('/obtenerOrdenesTrabajo', ordenesTrabajoController);
+router.delete('/eliminarOrdenTrabajo/:id', eliminarOrdenTrabajoController);
 
 export default router;

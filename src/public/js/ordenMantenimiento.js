@@ -240,44 +240,75 @@ document.addEventListener('DOMContentLoaded', async () => {
   await cargarTablaMantenimientos();
   await cargarSelect();
   await selectEmpleadosOrden();
+  await cargarOrdenesTrabajo();
 });
 
 // ORDENES DE TRABAJO
 
+async function cargarOrdenesTrabajo() {
+  try {
+    const response = await fetch('/obtenerOrdenesTrabajo');
+    const resultado = await response.json();
+    const ordenes = resultado.data;
+
+    const tbody = document.getElementById('datos-ordenes-trabajo');
+    tbody.innerHTML = ordenes.map(orden => `
+      <tr>
+        <td>${orden.orden_id}</td>
+        <td>${orden.mantenimiento}</td>
+        <td>${orden.personal}</td>
+        <td>${new Date(orden.fecha_ejecucion).toLocaleDateString()}</td>
+        <td>${new Date(orden.fecha_fin).toLocaleDateString()}</td>
+        <td>
+          <span class="badge ${
+            orden.prioridad === 'Alta' ? 'text-bg-danger' :
+            orden.prioridad === 'Media' ? 'text-bg-warning' :
+            'text-bg-info'
+          } p-2">${orden.prioridad}</span>
+        </td>
+        <td>
+          <a href="#" class="btn-eliminarTrabajo" data-id="${orden.orden_id}"><i class="fas fa-trash text-danger mx-1"></i></a>
+          <a href="#" class="btn-reporte" data-id="${orden.orden_id}" data-bs-toggle="modal" data-bs-target="#modalOrdenTrabajo"><i class="fas fa-check text-success mx-1"></i></a>
+        </td>
+      </tr>
+    `).join('');
+
+  } catch (error) {
+    console.error('Error al cargar mantenimientos:', error);
+    alert('Error al cargar datos');
+  }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btnOrdenTrabajo').addEventListener('click', async () => {
-    try {
-      const mantenimiento_id = document.getElementById('mantenimientoIdEdicion').value;
-      const empleado_id = document.getElementById('personalMantenimiento').value;
-      const fecha_ejecucion = document.getElementById('fechaInicioTrabajo').value;
-      const fecha_fin = document.getElementById('fechaFinTrabajo').value;
-      const prioridad = document.getElementById('prioridadTrabajo').value;
-      const datos = {
-        mantenimiento_id,
-        empleado_id,
-        fecha_ejecucion,
-        fecha_fin,
-        prioridad
-      };
+    const mantenimiento_id = document.getElementById('mantenimientoIdEdicion').value;
+    const empleado_id = document.getElementById('personalMantenimiento').value;
+    const fecha_ejecucion = document.getElementById('fechaInicioTrabajo').value;
+    const fecha_fin = document.getElementById('fechaFinTrabajo').value;
+    const prioridad = document.getElementById('prioridadTrabajo').value;
+    const datos = {
+      mantenimiento_id,
+      empleado_id,
+      fecha_ejecucion,
+      fecha_fin,
+      prioridad
+    };
 
-      const response = await fetch('/orden-trabajo', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(datos)
-      });
+    const response = await fetch('/crear-orden', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(datos)
+    });
 
-      const result = await response.json();
+    const result = await response.json();
+    await cargarOrdenesTrabajo();
 
-      if (response.ok) {
-        alert('¡Orden de trabajo generada correctamente!');
-        bootstrap.Modal.getInstance(document.getElementById('modalOrdenTrabajo')).hide();
-        await cargarTablaOrdenes();
-      } else {
-        alert(`Error: ${result.error}`);
-      }
-    } catch (error) {
-      console.error('Error al generar la orden de trabajo:', error);
-      alert('Error al generar la orden de trabajo');
+    if (response.ok) {
+      alert('¡Orden de trabajo generada correctamente!');
+      bootstrap.Modal.getInstance(document.getElementById('modalOrdenTrabajo')).hide();
+      await cargarTablaOrdenes();
+    } else {
+      alert(`Error: ${result.error}`);
     }
   });
 });
@@ -337,4 +368,38 @@ document.getElementById('btnOrdenTrabajo').addEventListener('click', async () =>
     console.error('Error en la solicitud:', error);
     alert('Ocurrió un error al enviar la orden');
   }
+});
+
+async function eliminarOrdenTrabajo(boton) {
+  const id = boton.getAttribute('data-id');
+  if (!id) return;
+
+  if (!confirm('¿Estás seguro de eliminar esta orden de trabajo?')) {
+    return;
+  }
+
+  try {
+    const response = await fetch(`/eliminarOrdenTrabajo/${id}`, {
+      method: 'DELETE'
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      alert('Orden eliminada correctamente');
+      boton.closest('tr').remove();
+    } else {
+      throw new Error(result.error || 'Error al eliminar');
+    }
+  } catch (error) {
+    console.error('Error al eliminar:', error);
+    alert('Error al eliminar la orden: ' + error.message);
+  }
+};
+
+document.getElementById('datos-ordenes-trabajo').addEventListener('click', (e) => {
+  const boton = e.target.closest('.btn-eliminarTrabajo');
+  console.log(boton);
+  if (!boton) return;
+  eliminarOrdenTrabajo(boton);
 });

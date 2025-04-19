@@ -1,4 +1,3 @@
-import connection from "../database.js";
 import { obtenerMantenimientos, 
          obtenerEquipos, 
          obtenerRepuestos, 
@@ -7,7 +6,9 @@ import { obtenerMantenimientos,
          obtenerIdEdicion,
          actualizarMantenimiento,
          crearOrdenTrabajo,
-         obtenerEmpleado } 
+         obtenerEmpleado,
+         obtenerOrdenesTrabajo, 
+         eliminarOrdenTrabajo} 
          from "../models/ordenMantenimientoModel.js";
 
 export const listarMantenimientos = async (req, res) => {
@@ -144,12 +145,12 @@ export const actualizarMantenimientoController = async (req, res) => {
 
   try {
     const result = await actualizarMantenimiento(id, datos);
-    console.log('Resultado de la actualización:', result);  // Ver qué devuelve la función de actualización
+    console.log('Resultado de la actualización:', result); 
     
     if (result.success) {
-      return res.status(200).json(result);  // Si la actualización fue exitosa
+      return res.status(200).json(result);
     } else {
-      throw new Error('La actualización no se realizó correctamente'); // Si no fue exitosa
+      throw new Error('La actualización no se realizó correctamente'); 
     }
   } catch (error) {
     console.error('Error al actualizar el mantenimiento:', error);
@@ -160,24 +161,7 @@ export const actualizarMantenimientoController = async (req, res) => {
   }
 };
 
-export const crearOr = async (req, res) => {
-  try {
-    const datos = req.body;
-    const resultado = await crearOrdenTrabajo(datos);
-
-    const updateQuery = `UPDATE mantenimiento_equipos SET estado = 'En proceso' WHERE mantenimiento_id = ?`;
-    connection.query(updateQuery, [datos.mantenimiento_id], (error) => {
-      if (error) {
-        console.error('Error al actualizar el estado del mantenimiento:', error);
-      }
-    });
-
-    res.status(201).json({ message: 'Orden de trabajo creada exitosamente', ordenId: resultado.insertId });
-  } catch (err) {
-    console.error('Error al crear orden de trabajo:', err);
-    res.status(500).json({ error: 'Error del servidor' });
-  }
-};
+// ORDENES DE TRABAJO
 
 export const crearOrdenTrabajoController = async (req, res) => {
   try {
@@ -188,5 +172,31 @@ export const crearOrdenTrabajoController = async (req, res) => {
   } catch (error) {
     console.error('Error al crear la orden de trabajo:', error);
     res.status(500).json({ success: false, error: 'Error del servidor' });
+  }
+};
+
+export const ordenesTrabajoController = async (req, res) => {
+  try {
+    const ordenes = await obtenerOrdenesTrabajo();
+    res.status(200).json({
+      success: true,
+      data: ordenes
+    });
+  } catch (error) {
+    res.status(error.status || 500).json({
+      success: false,
+      message: error.message || 'Error al obtener las órdenes de trabajo',
+      error: error.sqlError || null
+    });
+  }
+};
+
+export const eliminarOrdenTrabajoController = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await eliminarOrdenTrabajo(id);
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Error al eliminar la orden' });
   }
 };

@@ -149,30 +149,33 @@ export const actualizarMantenimiento = (id, datos) => {
 
 // TABLA DE ORDENES DE TRABAJO
 
-export const obteneroOrdenesTrabajo = () => {
+export const obtenerOrdenesTrabajo = () => {
   return new Promise((resolve, reject) => {
     const query = `
-      select  ot.orden_id,
-		    eq.nombre as mantenimiento,
-        e.nombre as personal,
+      SELECT 
+        ot.orden_id,
+        eq.nombre AS mantenimiento,
+        e.nombre AS personal,
         ot.fecha_ejecucion,
         ot.fecha_fin,
         ot.prioridad
-	    from ordenes_trabajo ot 
-        left join mantenimiento_equipos me on ot.mantenimiento_id = me.mantenimiento_id
-        left join empleados e on ot.empleado_id = e.empleado_id
-        left join equipos eq on me.equipo_id = eq.equipo_id`;
+      FROM ordenes_trabajo ot 
+      LEFT JOIN mantenimiento_equipos me ON ot.mantenimiento_id = me.mantenimiento_id
+      LEFT JOIN empleados e ON ot.empleado_id = e.empleado_id
+      LEFT JOIN equipos eq ON me.equipo_id = eq.equipo_id
+      ORDER BY ot.fecha_ejecucion DESC
+    `;
     
-    connection.query(query, (error, results, fields) => {
+    connection.query(query, (error, results) => {
       if (error) {
         console.error('Error en la consulta SQL:', error);
         return reject({
-          message: 'Error al obtener mantenimientos',
+          message: 'Error al obtener órdenes de trabajo',
           status: 500,
           sqlError: error.message
         });
       }
-      resolve(results || []); 
+      resolve(results || []);
     });
   });
 };
@@ -203,6 +206,16 @@ export const obtenerEmpleado = () => {
   return new Promise((resolve, reject) => {
     const query = 'SELECT empleado_id, nombre FROM empleados';
     connection.query(query, (error, results) => {
+      if (error) return reject(error);
+      resolve(results);
+    });
+  });
+};
+
+export const eliminarOrdenTrabajo = async (id) => {
+  return new Promise((resolve, reject) => {
+    const query = 'DELETE FROM ordenes_trabajo WHERE mantenimiento_id = ?';
+    connection.query(query, [id], (error, results) => {
       if (error) return reject(error);
       resolve(results);
     });
