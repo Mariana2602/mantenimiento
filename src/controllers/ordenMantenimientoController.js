@@ -102,9 +102,10 @@ export const registrarMantenimiento = async (req, res) => {
 export const eliminarMantenimiento = async (req, res) => {
   try {
     const { id } = req.params;
-    const eliminado = await eliminarOrdenMantenimiento(id);
+    const eliminadoOrden = await eliminarOrdenTrabajo(id);
+    const eliminadoMantenimiento = await eliminarOrdenMantenimiento(id);
     
-    if (!eliminado) {
+    if (!eliminadoMantenimiento || !eliminadoOrden) {
       return res.status(404).json({ 
         success: false, 
         error: 'Mantenimiento no encontrado' 
@@ -116,14 +117,14 @@ export const eliminarMantenimiento = async (req, res) => {
     res.status(500).json({ 
       success: false, 
       error: 'Error al eliminar mantenimiento',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      details: error.message
     });
   }
 };
 
 export const obtenerMantenimientoEdicion = async (req, res) => {
   try {
-    const { id } = req.params; 
+    const { id } = req.params;
     const mantenimiento = await obtenerIdEdicion(id);
 
     res.json(mantenimiento);

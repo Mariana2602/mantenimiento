@@ -86,8 +86,16 @@ export const eliminarOrdenMantenimiento = async (id) => {
   return new Promise((resolve, reject) => {
     const query = 'DELETE FROM mantenimiento_equipos WHERE mantenimiento_id = ?';
     connection.query(query, [id], (error, results) => {
-      if (error) return reject(error);
-      resolve(results.affectedRows > 0);
+      if (error) {
+        console.error('Error SQL al eliminar mantenimiento:', error);
+        return reject(new Error('No se pudo eliminar. Verifica dependencias o el ID.'));
+      }
+
+      if (results.affectedRows === 0) {
+        return reject(new Error('No se encontró mantenimiento con ese ID.'));
+      }
+
+      resolve(true);
     });
   });
 };
@@ -214,10 +222,10 @@ export const obtenerEmpleado = () => {
 
 export const eliminarOrdenTrabajo = async (id) => {
   return new Promise((resolve, reject) => {
-    const query = 'DELETE FROM ordenes_trabajo WHERE mantenimiento_id = ?';
+    const query = 'DELETE FROM ordenes_trabajo WHERE orden_id = ?';
     connection.query(query, [id], (error, results) => {
       if (error) return reject(error);
-      resolve(results);
+      resolve(results.affectedRows > 0);
     });
   });
 };

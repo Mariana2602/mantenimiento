@@ -17,7 +17,7 @@ async function cargarTablaMantenimientos() {
         <td class="actions">
           <a href="#" class="btn-eliminar" data-id="${m.mantenimiento_id}"><i class="fas fa-trash text-danger mx-1"></i></a>
           <a href="#" class="btn-editar" data-id="${m.mantenimiento_id}" data-bs-toggle="modal" data-bs-target="#modalEdicion"><i class="fas fa-pen text-warning mx-1"></i></a>
-          <a href="#" class="btn-editar" data-id="${m.mantenimiento_id}" data-bs-toggle="modal" data-bs-target="#modalOrdenTrabajo"><i class="fas fa-file text-success mx-1"></i></a>
+          <a href="#" class="btn-orden" data-id="${m.mantenimiento_id}" data-bs-toggle="modal" data-bs-target="#modalOrdenTrabajo"><i class="fas fa-file text-success mx-1"></i></a>
         </td>
       </tr>
     `).join('');
@@ -30,12 +30,12 @@ async function cargarTablaMantenimientos() {
 
 
 
-async function cargarSelectEdicion() {
+async function cargarSelectEdicion(selectEquipos, selectRepuestos) {
   try {
     const response = await fetch('/datos-formulario');
     const { equipos, repuestos } = await response.json();
 
-    const selectEquipo = document.getElementById('selectEquipoEdicion');
+    const selectEquipo = document.getElementById(selectEquipos);
     selectEquipo.innerHTML = '<option value="">Seleccione un equipo</option>';
     equipos.forEach(equipo => {
       const option = document.createElement('option');
@@ -44,35 +44,7 @@ async function cargarSelectEdicion() {
       selectEquipo.appendChild(option);
     });
 
-    const selectRepuesto = document.getElementById('selectRepuestoEdicion');
-    selectRepuesto.innerHTML = '<option value="">Seleccione un repuesto</option>';
-    repuestos.forEach(repuesto => {
-      const option = document.createElement('option');
-      option.value = repuesto.repuesto_id;
-      option.textContent = repuesto.nombre;
-      selectRepuesto.appendChild(option);
-    });
-
-  } catch (error) {
-    console.error('Error al cargar datos para formulario:', error);
-  }
-};
-
-async function cargarSelect() {
-  try {
-    const response = await fetch('/datos-formulario');
-    const { equipos, repuestos } = await response.json();
-
-    const selectEquipo = document.getElementById('selectEquipo');
-    selectEquipo.innerHTML = '<option value="">Seleccione un equipo</option>';
-    equipos.forEach(equipo => {
-      const option = document.createElement('option');
-      option.value = equipo.equipo_id;
-      option.textContent = equipo.nombre;
-      selectEquipo.appendChild(option);
-    });
-
-    const selectRepuesto = document.getElementById('selectRepuesto');
+    const selectRepuesto = document.getElementById(selectRepuestos);
     selectRepuesto.innerHTML = '<option value="">Seleccione un repuesto</option>';
     repuestos.forEach(repuesto => {
       const option = document.createElement('option');
@@ -88,7 +60,6 @@ async function cargarSelect() {
 
 document.getElementById('btnOrdenMantenimiento').addEventListener('click', async (e) => {
   e.preventDefault();
-  
   try {
     const formData = {
       tipomantenimiento: document.getElementById('tipoMantenimiento').value,
@@ -128,7 +99,7 @@ async function eliminarMantenimiento(boton) {
   const id = boton.getAttribute('data-id');
   if (!id) return;
 
-  if (!confirm('¿Estás seguro de eliminar esta orden de mantenimiento?')) {
+  if (!confirm('¿Estás seguro de eliminar esta orden de mantenimiento? Al realizar esta accion las ordenes de trabajo derivadas de esta solicitud de servicio tambien seran eliminadas.')) {
     return;
   }
 
@@ -172,7 +143,7 @@ async function cargarEdicion(mantenimientoId) {
     document.getElementById('estadoEdicion').value = data.estado;
     document.getElementById('descripcionEdicion').value = data.descripcion;
     document.getElementById('campoEdicion').value = data.campo;
-    await cargarSelectEdicion();
+    await cargarSelectEdicion('selectEquipoEdicion', 'selectRepuestoEdicion');
     document.getElementById('selectEquipoEdicion').value = data.equipo_id;
     document.getElementById('selectRepuestoEdicion').value = data.repuesto_id;
     
@@ -229,11 +200,38 @@ document.addEventListener('click', async (e) => {
       await cargarEdicion(mantenimientoId);
     }
   }
+
+  if (e.target.matches('.btn-orden') || e.target.closest('.btn-orden')) {
+    const btn = e.target.closest('.btn-orden');
+    const mantenimientoId = btn.getAttribute('data-id');
+    console.log('ID del mantenimiento seleccionado para orden:', mantenimientoId);
+  
+    if (mantenimientoId) {
+      try {
+        const response = await fetch(`/actualizar/${mantenimientoId}`);
+        const data = await response.json();
+  
+        document.getElementById('mantenimientoIdOrden').value = data.mantenimiento_id;
+        document.getElementById('tipoMantenimientoOrden').value = data.tipomantenimiento;
+        document.getElementById('fechaInicioOrden').value = data.fecha_creacion;
+        document.getElementById('estadoOrden').value = data.estado;
+        document.getElementById('descripcionOrden').value = data.descripcion;
+        document.getElementById('campoOrden').value = data.campo;
+        await cargarSelectEdicion('selectEquipoOrden', 'selectRepuestoOrden');
+        document.getElementById('selectEquipoOrden').value = data.equipo_id;
+        document.getElementById('selectRepuestoOrden').value = data.repuesto_id;
+  
+      } catch (error) {
+        console.error('Error al cargar datos en modal de orden:', error);
+        alert('No se pudo cargar los datos para la orden de trabajo');
+      }
+    }
+  }
 });
 
 document.addEventListener('DOMContentLoaded', async () => {
   await cargarTablaMantenimientos();
-  await cargarSelect();
+  await cargarSelectEdicion('selectEquipo', 'selectRepuesto');
   await selectEmpleadosOrden();
   await cargarOrdenesTrabajo();
 
@@ -342,7 +340,7 @@ async function selectEmpleadosOrden() {
 };
 
 document.getElementById('btnOrdenTrabajo').addEventListener('click', async () => {
-  const mantenimientoId = document.getElementById('mantenimientoIdEdicion').value;
+  const mantenimientoId = document.getElementById('mantenimientoIdOrden').value;
   const empleadoId = document.getElementById('selectPersonalMantenimiento').value;
   const fechaEjecucion = document.getElementById('fechaInicioTrabajo').value;
   const fechaFin = document.getElementById('fechaFinTrabajo').value;
@@ -366,6 +364,7 @@ document.getElementById('btnOrdenTrabajo').addEventListener('click', async () =>
     });
 
     const result = await response.json();
+    await cargarOrdenesTrabajo();
 
     if (result.success) {
       alert('Orden de trabajo creada exitosamente');
@@ -393,6 +392,7 @@ async function eliminarOrdenTrabajo(boton) {
     });
 
     const result = await response.json();
+    await cargarOrdenesTrabajo();
 
     if (result.success) {
       alert('Orden eliminada correctamente');
@@ -405,4 +405,3 @@ async function eliminarOrdenTrabajo(boton) {
     alert('Error al eliminar la orden: ' + error.message);
   }
 };
-

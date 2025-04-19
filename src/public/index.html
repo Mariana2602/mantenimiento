@@ -193,7 +193,7 @@
                                               </div>
                                               <div class="col-md-3">
                                                   <label class="form-label">Estado</label>
-                                                  <input id="estadoEdicion" type="text" class="form-control">
+                                                  <input id="estadoEdicion" type="text" class="form-control" value="Pendiente" disabled>
                                               </div>
                                               <div class="col-md-6">
                                                   <label class="form-label">Descripcion</label>
@@ -223,19 +223,20 @@
                                     </div>
                                     <div class="modal-body text-start">
                                         <form class="row g-3" id="formularioEdicion">
+                                            <input type="hidden" id="mantenimientoIdOrden">
                                             <input type="hidden" id="idMantenimientoOrden">
                                             <div class="col-md-6">
                                                 <label class="form-label">Equipo</label>
-                                                <select id="selectEquipoEdicion" class="form-select" disabled></select>
+                                                <select id="selectEquipoOrden" class="form-select" disabled></select>
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label">Repuesto</label>
-                                                <select id="selectRepuestoEdicion" class="form-select" disabled>
+                                                <select id="selectRepuestoOrden" class="form-select" disabled>
                                                 </select>
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label">Tipo de mantenimiento</label>
-                                                <select id="tipoMantenimientoEdicion" class="form-select" disabled>
+                                                <select id="tipoMantenimientoOrden" class="form-select" disabled>
                                                     <option selected>Correctivo</option>
                                                     <option>Preventivo</option>
                                                     <option>Proactivo</option>
@@ -244,19 +245,19 @@
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label">Fecha creacion</label>
-                                                <input id="fechaInicioEdicion" type="date" class="form-control" disabled>
+                                                <input id="fechaInicioOrden" type="date" class="form-control" disabled>
                                             </div>
                                             <div class="col-md-3">
                                                 <label class="form-label">Estado</label>
-                                                <input id="estadoEdicion" type="text" class="form-control" value="En proceso" disabled>
+                                                <input id="estadoOrden" type="text" class="form-control" value="En proceso" disabled>
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="form-label">Descripcion</label>
-                                                <input id="descripcionEdicion" type="text" class="form-control" disabled>
+                                                <input id="descripcionOrden" type="text" class="form-control" disabled>
                                             </div>
                                             <div class="col-md-3">
                                                 <label class="form-label">Campo</label>
-                                                <input id="campoEdicion" type="text" class="form-control" disabled>
+                                                <input id="campoOrden" type="text" class="form-control" disabled>
                                             </div>
                                         </form>
                                         <hr>
@@ -302,6 +303,18 @@
                                     </div>
                                     <div class="modal-body text-center">
                                         <p class="fs-4">¡Esta orden sera marcada como completado o eliminada para la realizacion de un reporte! <br>¿Estas seguro de que deseas realizar esta accion?</p>
+                                        <div class="mb-3 text-start">
+                                            <label class="form-label">Resultados</label>
+                                            <select id="prioridadTrabajo" class="form-select">
+                                                <option selected>Media</option>
+                                                <option>Alta</option>
+                                                <option>Baja</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3 text-start">
+                                            <label class="form-label">Comentarios</label>
+                                            <textarea class="form-control" id="comentariosReportes" rows="3"></textarea>
+                                        </div>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -357,84 +370,6 @@
                         </table>
                     </div>
                 </div>
-
-                <div class="col-md-12 mt-4 text-end">
-                    <div class="d-inline-flex gap-1">
-                        <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#modalSolicitud"><i class="fas fa-plus me-2"></i>Registrar equipo medico</button>
-                        <div class="modal modal-lg fade" id="modalSolicitud" tabindex="-1" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">Registro de equipos</h5>
-                                    </div>
-                                    <div class="modal-body text-start">
-                                        <form class="row g-3" id="formEquiposMantenimiento">
-                                            <div class="col-md-6">
-                                                <label class="form-label">Nombre</label>
-                                                <input id="nombreEquipo" type="text" class="form-control">
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label class="form-label">Fecha instalacion</label>
-                                                <input id="fechaInstalacion" type="date" class="form-control">
-                                              </div>
-                                            <div class="col-md-12">
-                                                <label class="form-label">Descripcion</label>
-                                                <input id="descripcion" type="text" class="form-control">
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label class="form-label">Estado</label>
-                                                <input id="estado" type="text" class="form-control">
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label class="form-label">Frecuencia Mantenimiento</label>
-                                                <input id="frecuenciaMantenimiento" type="text" class="form-control">
-                                            </div>
-                                            <div class="col-md-3">
-                                                <label class="form-label">Modelo</label>
-                                                <input id="modeloEquipo" type="text" class="form-control">
-                                            </div>
-                                            <div class="col-md-3">
-                                                <label class="form-label">Ubicacion</label>
-                                                <input id="ubicacionEquipo" type="text" class="form-control">
-                                            </div>
-                                        </form>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                        <button id="btnOrdenMantenimiento" type="button" class="btn btn-primary">Crear solicitud</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-12">
-                    <div class="p-4 bg-white rounded-2 shadow">
-                        <p class="fs-2 m-0 fw-bold">Equipos del hospital</p>
-                        <hr>
-                        <table class="table table-striped text-center">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Nombre</th>
-                                    <th>Descripcion</th>
-                                    <th>Fecha</th>
-                                    <th>Equipo</th>
-                                    <th>Estado</th>
-                                    <th>Frecuencia</th>
-                                    <th>Modelo</th>
-                                    <th>Ubicacion</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody class="text-secondary"  id="datos-equipos-mantenimiento">
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-
             </div>
         </div>
     </main>
