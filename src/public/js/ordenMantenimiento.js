@@ -17,7 +17,7 @@ async function cargarTablaMantenimientos() {
         <td class="actions">
           <a href="#" class="btn-eliminar" data-id="${m.mantenimiento_id}"><i class="fas fa-trash text-danger mx-1"></i></a>
           <a href="#" class="btn-editar" data-id="${m.mantenimiento_id}" data-bs-toggle="modal" data-bs-target="#modalEdicion"><i class="fas fa-pen text-warning mx-1"></i></a>
-          <a href="#" class="btn-editar" data-id="${m.mantenimiento_id}" data-bs-toggle="modal" data-bs-target="#modalOrdenTrabajo"><i class="fas fa-check text-success mx-1"></i></a>
+          <a href="#" class="btn-editar" data-id="${m.mantenimiento_id}" data-bs-toggle="modal" data-bs-target="#modalOrdenTrabajo"><i class="fas fa-file text-success mx-1"></i></a>
         </td>
       </tr>
     `).join('');
@@ -28,12 +28,7 @@ async function cargarTablaMantenimientos() {
   }
 }
 
-document.getElementById('data-container').addEventListener('click', (e) => {
-  const boton = e.target.closest('.btn-eliminar');
-  console.log(boton);
-  if (!boton) return;
-  eliminarMantenimiento(boton);
-});
+
 
 async function cargarSelectEdicion() {
   try {
@@ -241,6 +236,20 @@ document.addEventListener('DOMContentLoaded', async () => {
   await cargarSelect();
   await selectEmpleadosOrden();
   await cargarOrdenesTrabajo();
+
+  document.getElementById('datos-ordenes-trabajo').addEventListener('click', (e) => {
+    const boton = e.target.closest('.btn-eliminarTrabajo');
+    console.log(boton);
+    if (!boton) return;
+    eliminarOrdenTrabajo(boton);
+  });
+
+  document.getElementById('data-container').addEventListener('click', (e) => {
+    const boton = e.target.closest('.btn-eliminar');
+    console.log(boton);
+    if (!boton) return;
+    eliminarMantenimiento(boton);
+  });
 });
 
 // ORDENES DE TRABAJO
@@ -268,7 +277,7 @@ async function cargarOrdenesTrabajo() {
         </td>
         <td>
           <a href="#" class="btn-eliminarTrabajo" data-id="${orden.orden_id}"><i class="fas fa-trash text-danger mx-1"></i></a>
-          <a href="#" class="btn-reporte" data-id="${orden.orden_id}" data-bs-toggle="modal" data-bs-target="#modalOrdenTrabajo"><i class="fas fa-check text-success mx-1"></i></a>
+          <a href="#" class="btn-reporte" data-id="${orden.orden_id}" data-bs-toggle="modal" data-bs-target="#modalReporte"><i class="fas fa-check text-success mx-1"></i></a>
         </td>
       </tr>
     `).join('');
@@ -397,9 +406,3 @@ async function eliminarOrdenTrabajo(boton) {
   }
 };
 
-document.getElementById('datos-ordenes-trabajo').addEventListener('click', (e) => {
-  const boton = e.target.closest('.btn-eliminarTrabajo');
-  console.log(boton);
-  if (!boton) return;
-  eliminarOrdenTrabajo(boton);
-});

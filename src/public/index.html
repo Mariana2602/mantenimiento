@@ -292,6 +292,25 @@
                             </div>
                         </div>
 
+                        <!-- MODAL PARA REPORTE -->
+
+                        <div class="modal modal-lg fade" id="modalReporte" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog text-center">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h3 class="modal-title">Realizar reporte</h3>
+                                    </div>
+                                    <div class="modal-body text-center">
+                                        <p class="fs-4">¡Esta orden sera marcada como completado o eliminada para la realizacion de un reporte! <br>¿Estas seguro de que deseas realizar esta accion?</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                        <button id="btnOrdenTrabajo" type="button" class="btn btn-primary">Generar reporte</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
@@ -320,6 +339,24 @@
                 </div>
 
                 <!-- TABLA EQUIPOS DE MANTENIMIENTO -->
+                <div class="col-md-12">
+                    <div class="p-4 bg-white rounded-2 shadow mt-4">
+                        <p class="fs-2 m-0 fw-bold">Reportes</p>
+                        <hr>
+                        <table class="table table-striped text-center">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Resultado</th>
+                                    <th>Comentarios</th>
+                                    <th>Mirar todo</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-secondary"  id="datos-equipos-mantenimiento">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
                 <div class="col-md-12 mt-4 text-end">
                     <div class="d-inline-flex gap-1">
@@ -371,6 +408,7 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="col-md-12">
                     <div class="p-4 bg-white rounded-2 shadow">
                         <p class="fs-2 m-0 fw-bold">Equipos del hospital</p>
@@ -395,6 +433,8 @@
                         </table>
                     </div>
                 </div>
+
+
             </div>
         </div>
     </main>
