@@ -1,0 +1,61 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f8f9fa;
+    color: #343a40;
+    padding-left: 280px;
+}
+.sidebar {
+    color: #fff;
+    min-height: 100vh;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 16vw;
+    z-index: 600;
+    padding-left: 20px;
+    background-color: #00489b !important;
+}
+
+.btn-azul{
+  background-color: #00489b !important;
+  color: #ffffff;
+}
+
+.table th {
+    background-color: #00489b;
+    color: #fff;
+}
+
+.btn-filter-active {
+    border: 2px solid #000;
+    font-weight: bold;
+}
+
+.sidebar img {
+  margin-bottom: 2.5vh;
+  max-width: 13vw;
+}
+@media print {
+  body {
+    padding-left: 0 !important;
+    background: #fff !important;
+  }
+  #sidebarMenu,
+  #imprimir,
+  #buscadorReportes,
+  hr,
+  a[href="/mantenimiento"] {
+    display: none !important;
+  }
+  .container, .p-4.bg-white {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    box-shadow: none !important;
+  }
+  table {
+    margin: 0 auto !important;
+    width: 100% !important;
+  }
+}
