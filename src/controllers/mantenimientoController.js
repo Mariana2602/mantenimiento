@@ -5,14 +5,9 @@ import { obtenerMantenimientos,
          eliminarOrdenMantenimiento, 
          obtenerIdEdicion,
          actualizarMantenimiento,
-         crearOrdenTrabajo,
-         obtenerEmpleado,
-         obtenerOrdenesTrabajo, 
-         eliminarOrdenTrabajo,
          cambiarEstadoSolicitud,
          cambiarEstadoEliminado,
-         cambiarEstadoCompletado,
-         cambiarPrioridadCompletado} 
+         cambiarEstadoCompletado} 
          from "../models/mantenimientoModel.js";
 
 export const listarMantenimientos = async (req, res) => {
@@ -28,18 +23,6 @@ export const listarMantenimientos = async (req, res) => {
       success: false,
       error: error.message || 'Error al obtener datos',
       details: process.env.NODE_ENV === 'development' ? error : undefined
-    });
-  }
-};
-
-export const obtenerEmpleadoController = async (req, res) => {
-  try {
-    const empleado = await obtenerEmpleado();
-    res.json(empleado);
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: 'Error al obtener nombre del empleado'
     });
   }
 };
@@ -66,6 +49,7 @@ export const registrarMantenimiento = async (req, res) => {
   try {
     const { body } = req;
     let fechaFormateada;
+    
     try {
       fechaFormateada = body.fecha_creacion 
         ? new Date(body.fecha_creacion).toISOString().slice(0, 19).replace('T', ' ')
@@ -81,11 +65,11 @@ export const registrarMantenimiento = async (req, res) => {
       estado: body.estado || 'Pendiente',
       ubicacion: body.ubicacion || null,
       observaciones: body.observaciones || null,
-      Id_Equipo: body.Id_Equipo ? parseInt(body.Id_Equipo) : null,
+      Id_Modelo: body.Id_Modelo,  
       Id_Repuesto: body.Id_Repuesto ? parseInt(body.Id_Repuesto) : null
     };
 
-    console.log('Datos a insertar:', datosMantenimiento); // Log para depuración
+    console.log('Datos a insertar:', datosMantenimiento);
 
     const mantenimientoId = await crearOrdenMantenimiento(datosMantenimiento);
 
@@ -128,7 +112,18 @@ export const obtenerMantenimientoEdicion = async (req, res) => {
     const { id } = req.params;
     const mantenimiento = await obtenerIdEdicion(id);
 
-    res.json(mantenimiento);
+    res.json({
+      mantenimiento_id: mantenimiento.mantenimiento_id,
+      descripcion: mantenimiento.descripcion,
+      tipomantenimiento: mantenimiento.tipomantenimiento,
+      fecha_creacion: mantenimiento.fecha_creacion,
+      estado: mantenimiento.estado,
+      ubicacion: mantenimiento.ubicacion,
+      observaciones: mantenimiento.observaciones,
+      Id_Modelo: mantenimiento.Id_Modelo,     
+      Id_Repuesto: mantenimiento.Id_Repuesto  
+    });
+
   } catch (error) {
     console.error(error);
     res.status(500).json({
@@ -140,68 +135,55 @@ export const obtenerMantenimientoEdicion = async (req, res) => {
 };
 
 export const actualizarMantenimientoController = async (req, res) => {
-  const { id } = req.params;
-  const datos = req.body;
-
-  console.log('Datos recibidos para actualización:', datos);
-
-  try {
-    const result = await actualizarMantenimiento(id, datos);
-    console.log('Resultado de la actualización:', result); 
-    
-    if (result.success) {
-      return res.status(200).json(result);
-    } else {
-      throw new Error('La actualización no se realizó correctamente'); 
-    }
-  } catch (error) {
-    console.error('Error al actualizar el mantenimiento:', error);
-    return res.status(500).json({
-      error: 'Error interno del servidor',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
-  }
-};
-
-// ORDENES DE TRABAJO
-
-export const crearOrdenTrabajoController = async (req, res) => {
-  try {
-    const datos = req.body;
-    console.log('Datos recibidos para crear orden:', datos);
-    const ordenId = await crearOrdenTrabajo(datos);
-    res.json({ success: true, ordenId });
-    
-  } catch (error) {
-    console.error('Error al crear la orden de trabajo:', error);
-    res.status(500).json({ success: false, error: 'Error del servidor' });
-  }
-};
-
-export const ordenesTrabajoController = async (req, res) => {
-  try {
-    const prioridad = req.params.prioridad || '';
-    const ordenes = await obtenerOrdenesTrabajo(prioridad);
-    res.status(200).json({
-      success: true,
-      data: ordenes
-    });
-  } catch (error) {
-    res.status(error.status || 500).json({
-      success: false,
-      message: error.message || 'Error al obtener las órdenes de trabajo',
-      error: error.sqlError || null
-    });
-  }
-};
-
-export const eliminarOrdenTrabajoController = async (req, res) => {
   try {
     const { id } = req.params;
-    await eliminarOrdenTrabajo(id);
-    res.json({ success: true });
+    const { body } = req;
+
+    let fechaFormateada;
+    try {
+      fechaFormateada = body.fecha_creacion 
+        ? new Date(body.fecha_creacion).toISOString().slice(0, 19).replace('T', ' ')
+        : new Date().toISOString().slice(0, 19).replace('T', ' ');
+    } catch (e) {
+      fechaFormateada = new Date().toISOString().slice(0, 19).replace('T', ' ');
+    }
+
+    const datosActualizacion = {
+      descripcion: body.descripcion,
+      tipomantenimiento: body.tipomantenimiento,
+      fecha_creacion: fechaFormateada,
+      estado: body.estado || 'Pendiente',
+      ubicacion: body.ubicacion || null,
+      observaciones: body.observaciones || null,
+      Id_Modelo: body.Id_Modelo,  // Este lo usas para buscar Id_Equipo en el modelo
+      Id_Repuesto: body.Id_Repuesto ? parseInt(body.Id_Repuesto) : null
+    };
+
+    console.log('Datos para actualización:', datosActualizacion);
+
+    const resultado = await actualizarMantenimiento(id, datosActualizacion);
+
+    res.status(200).json({
+      success: true,
+      message: 'Mantenimiento actualizado correctamente',
+      result: resultado
+    });
+
   } catch (error) {
-    res.status(500).json({ success: false, error: 'Error al eliminar la orden' });
+    console.error('Error detallado al actualizar mantenimiento:', {
+      message: error.message,
+      stack: error.stack,
+      sqlError: error.sqlMessage || 'No es error de SQL'
+    });
+
+    res.status(500).json({
+      success: false,
+      error: 'Error al actualizar el mantenimiento',
+      details: process.env.NODE_ENV === 'development' ? {
+        message: error.message,
+        sqlError: error.sqlMessage
+      } : undefined
+    });
   }
 };
 
@@ -241,22 +223,6 @@ export const cambiarEstadoCompletadoController = async (req, res) => {
   try {
     const { id } = req.params;
     const actualizado = await cambiarEstadoCompletado(id);
-
-    if (!actualizado) {
-      return res.status(404).json({ success: false, error: 'Solicitud no encontrada' });
-    }
-
-    res.json({ success: true });
-  } catch (error) {
-    console.error('Error al actualizar el estado:', error);
-    res.status(500).json({ success: false, error: 'Error al actualizar el estado' });
-  }
-};
-
-export const cambiarPrioridadController = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const actualizado = await cambiarPrioridadCompletado(id);
 
     if (!actualizado) {
       return res.status(404).json({ success: false, error: 'Solicitud no encontrada' });

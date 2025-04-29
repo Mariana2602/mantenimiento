@@ -34,7 +34,10 @@ export const obtenerMantenimientos = () => {
 
 export const obtenerEquipos = () => {
   return new Promise((resolve, reject) => {
-    const query = 'select modelos_equipos.Nombre from mantenimiento_equipos left join equipos on mantenimiento_equipos.Id_Equipo = equipos.Id_Equipo left join modelos_equipos on equipos.Id_Equipo = modelos_equipos.Id_Modelo';
+    const query = `
+      SELECT DISTINCT modelos_equipos.Id_Modelo, modelos_equipos.Nombre
+      FROM equipos INNER JOIN modelos_equipos ON equipos.Id_Modelo = modelos_equipos.Id_Modelo
+    `;
     connection.query(query, (error, results) => {
       if (error) return reject(error);
       resolve(results);
@@ -44,7 +47,7 @@ export const obtenerEquipos = () => {
 
 export const obtenerRepuestos = () => {
   return new Promise((resolve, reject) => {
-    const query = 'SELECT nombre FROM repuestos';
+    const query = 'SELECT Id_Repuesto, nombre FROM repuestos';
     connection.query(query, (error, results) => {
       if (error) return reject(error);
       resolve(results);
@@ -54,35 +57,45 @@ export const obtenerRepuestos = () => {
 
 export const crearOrdenMantenimiento = (datos) => {
   return new Promise((resolve, reject) => {
-    const query = `
-      INSERT INTO mantenimiento_equipos 
-        (descripcion,
-        tipomantenimiento,
-        fecha_creacion,
-        estado,
-        ubicacion,
-        observaciones,
-        Id_Equipo,
-        Id_Repuesto
-        )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    `;
-    
-    const values = [
-      datos.descripcion,
-      datos.tipomantenimiento,
-      datos.fecha_creacion,
-      datos.estado || 'Pendiente',
-      datos.ubicacion,
-      datos.observaciones,
-      datos.Id_Equipo || null,
-      datos.Id_Repuesto || null 
-    ];
+    connection.query(
+      `SELECT Id_Equipo FROM equipos 
+       WHERE Id_Modelo = ?
+       LIMIT 1`,
+      [datos.Id_Modelo],
+      (error, equipos) => {
+        if (error) return reject(error);
+        const equipoId = equipos.length > 0 ? equipos[0].Id_Equipo : null;
 
-    connection.query(query, values, (error, results) => {
-      if (error) return reject(error);
-      resolve(results.insertId);
-    });
+        const query = `
+          INSERT INTO mantenimiento_equipos 
+            (descripcion,
+            tipomantenimiento,
+            fecha_creacion,
+            estado,
+            ubicacion,
+            observaciones,
+            Id_Equipo,
+            Id_Repuesto
+            )
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+        
+        const values = [
+          datos.descripcion,
+          datos.tipomantenimiento,
+          datos.fecha_creacion,
+          datos.estado || 'Pendiente',
+          datos.ubicacion,
+          datos.observaciones,
+          equipoId,
+          datos.Id_Repuesto || null 
+        ];
+
+        connection.query(query, values, (error, results) => {
+          if (error) return reject(error);
+          resolve(results.insertId);
+        });
+      }
+    );
   });
 };
 
@@ -98,7 +111,10 @@ export const eliminarOrdenMantenimiento = async (id) => {
 
 export const obtenerIdEdicion = (id) => {
   return new Promise((resolve, reject) => {
-    const query = `SELECT * FROM mantenimiento_equipos WHERE mantenimiento_id = ?`;
+    const query = `SELECT mantenimiento_equipos.*, equipos.Id_Modelo 
+                    FROM mantenimiento_equipos
+                    LEFT JOIN equipos ON mantenimiento_equipos.Id_Equipo = equipos.Id_Equipo
+                    WHERE mantenimiento_equipos.mantenimiento_id = ?`;
     connection.query(query, [id], (error, results) => {
       if (error) return reject(error);
       if (results.length === 0) return reject(new Error('Mantenimiento no encontrado'));
@@ -109,130 +125,51 @@ export const obtenerIdEdicion = (id) => {
 
 export const actualizarMantenimiento = (id, datos) => {
   return new Promise((resolve, reject) => {
-    const {
-      descripcion,
-      tipomantenimiento,
-      fecha_creacion,
-      estado,
-      ubicacion,
-      observaciones,
-      Id_Equipo,
-      Id_Repuesto
-    } = datos;
-
-    const query = `
-      UPDATE mantenimiento_equipos
-      SET 
-        descripcion = ?,
-        tipomantenimiento = ?,
-        fecha_creacion = ?,
-        estado = ?,
-        ubicacion = ?,
-        observaciones = ?,
-        Id_Equipo = ?
-        Id_Repuesto = ?
-      WHERE mantenimiento_id = ?
-    `;
-
     connection.query(
-      query,
-      [descripcion, tipomantenimiento, fecha_creacion, fecha_creacion, estado, ubicacion, observaciones, Id_Equipo, Id_Repuesto, id],
-      (error, results) => {
-        if (error) {
-          console.error('Error en la consulta SQL:', error);
-          return reject(error);
-        }
-        if (results.affectedRows === 0) {
-          console.log('No se encontró el mantenimiento con ID:', id);
-          return reject(new Error('Mantenimiento no encontrado o no actualizado'));
-        }
-        resolve({ success: true, updated: results });
+      `SELECT Id_Equipo FROM equipos 
+       WHERE Id_Modelo = ? 
+       LIMIT 1`,
+      [datos.Id_Modelo],
+      (error, equipos) => {
+        if (error) return reject(error);
+        const equipoId = equipos.length > 0 ? equipos[0].Id_Equipo : null;
+
+        const query = `
+          UPDATE mantenimiento_equipos
+          SET 
+            descripcion = ?,
+            tipomantenimiento = ?,
+            fecha_creacion = ?,
+            estado = ?,
+            ubicacion = ?,
+            observaciones = ?,
+            Id_Equipo = ?,
+            Id_Repuesto = ?
+          WHERE mantenimiento_id = ?`;
+
+        const values = [
+          datos.descripcion,
+          datos.tipomantenimiento,
+          datos.fecha_creacion,
+          datos.estado,
+          datos.ubicacion,
+          datos.observaciones,
+          equipoId,
+          datos.Id_Repuesto || null,
+          id
+        ];
+
+        connection.query(query, values, (error, results) => {
+          if (error) return reject(error);
+          if (results.affectedRows === 0) {
+            return reject(new Error('Mantenimiento no encontrado o no actualizado'));
+          }
+          resolve({ success: true, updated: results });
+        });
       }
     );
   });
 };
-
-
-// TABLA DE ORDENES DE TRABAJO
-
-export const obtenerOrdenesTrabajo = (prioridad = '') => {
-  return new Promise((resolve, reject) => {
-    let query = `
-      select ordenes_trabajo.orden_id, 
-        mantenimiento_equipos.mantenimiento_id,
-        modelos_equipos.Nombre as nombre_equipo,
-        empleados.nombre as personal,
-        ordenes_trabajo.fecha_ejecucion,
-        ordenes_trabajo.fecha_fin,
-        ordenes_trabajo.prioridad from ordenes_trabajo
-      left join mantenimiento_equipos ON ordenes_trabajo.mantenimiento_id = mantenimiento_equipos.mantenimiento_id
-      left join empleados ON ordenes_trabajo.empleado_id = empleados.empleado_id
-      left join equipos ON mantenimiento_equipos.Id_Equipo = equipos.Id_Equipo
-      left join modelos_equipos ON equipos.Id_Equipo = modelos_equipos.Id_Modelo
-    `;
-
-    if (prioridad && ['Alta', 'Media', 'Baja'].includes(prioridad)) {
-      query += ` WHERE ordenes_trabajo.prioridad = '${prioridad}'`;
-    }
-
-    query += ` ORDER BY ordenes_trabajo.fecha_ejecucion DESC`;
-
-    connection.query(query, (error, results) => {
-      if (error) {
-        console.error('Error en la consulta SQL:', error);
-        return reject({
-          message: 'Error al obtener órdenes de trabajo',
-          status: 500,
-          sqlError: error.message
-        });
-      }
-      resolve(results || []);
-    });
-  });
-};
-
-export const crearOrdenTrabajo = (datos) => {
-  return new Promise((resolve, reject) => {
-    const query = `
-      INSERT INTO ordenes_trabajo (mantenimiento_id, empleado_id, fecha_ejecucion, fecha_fin, prioridad)
-      VALUES (?, ?, ?, ?, ?)
-    `;
-
-    const values = [
-      datos.mantenimiento_id,
-      datos.empleado_id,
-      datos.fecha_ejecucion,
-      datos.fecha_fin,
-      datos.prioridad || 'En proceso',
-    ];
-
-    connection.query(query, values, (error, results) => {
-      if (error) return reject(error);
-      resolve(results.insertId);
-    });
-  });
-};
-
-export const obtenerEmpleado = () => {
-  return new Promise((resolve, reject) => {
-    const query = 'SELECT empleado_id, nombre FROM empleados';
-    connection.query(query, (error, results) => {
-      if (error) return reject(error);
-      resolve(results);
-    });
-  });
-};
-
-export const eliminarOrdenTrabajo = async (id) => {
-  return new Promise((resolve, reject) => {
-    const query = 'DELETE FROM ordenes_trabajo WHERE orden_id = ?';
-    connection.query(query, [id], (error, results) => {
-      if (error) return reject(error);
-      resolve(results.affectedRows > 0);
-    });
-  });
-};
-
 
 export const cambiarEstadoSolicitud = async (id) => {
   return new Promise((resolve, reject) => {
@@ -261,18 +198,6 @@ export const cambiarEstadoEliminado = async (id) => {
 export const cambiarEstadoCompletado = async (id) => {
   return new Promise((resolve, reject) => {
     const query = 'UPDATE mantenimiento_equipos SET estado = ? WHERE mantenimiento_id = ?';
-    const nuevoEstado = 'Completado';
-
-    connection.query(query, [nuevoEstado, id], (error, result) => {
-      if (error) return reject(error);
-      resolve(result.affectedRows > 0);
-    });
-  });
-};
-
-export const cambiarPrioridadCompletado = async (id) => {
-  return new Promise((resolve, reject) => {
-    const query = 'UPDATE ordenes_trabajo SET prioridad = ? WHERE orden_id = ?';
     const nuevoEstado = 'Completado';
 
     connection.query(query, [nuevoEstado, id], (error, result) => {

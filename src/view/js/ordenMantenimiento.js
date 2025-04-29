@@ -1,6 +1,6 @@
 async function cargarTablaMantenimientos() {
   try {
-    const response = await fetch('/mantenimiento/lista');
+    const response = await fetch('/api/mantenimiento/lista');
     const mantenimientos = await response.json();
 
     const tbody = document.getElementById('data-container');
@@ -42,14 +42,14 @@ async function cargarTablaMantenimientos() {
 
 async function cargarSelectEdicion(selectEquipos, selectRepuestos) {
   try {
-    const response = await fetch('/mantenimiento/datos-formulario');
+    const response = await fetch('/api/mantenimiento/datosFormulario');
     const { equipos, repuestos } = await response.json();
 
     const selectEquipo = document.getElementById(selectEquipos);
     selectEquipo.innerHTML = '<option value="">Seleccione un equipo</option>';
     equipos.forEach(equipo => {
       const option = document.createElement('option');
-      option.value = equipo.Id_Equipo;
+      option.value = equipo.Id_Modelo;
       option.textContent = equipo.Nombre;
       selectEquipo.appendChild(option);
     });
@@ -75,51 +75,38 @@ document.getElementById('btnOrdenMantenimiento').addEventListener('click', async
     form.classList.add('was-validated');
     return;
   }
-
   try {
-    const getValue = (id) => {
-      const element = document.getElementById(id);
-      if (!element) {
-        console.error(`Elemento con ID ${id} no encontrado`);
-        return null;
-      }
-      return element.value || null;
-    };
-
     const formData = {
-      descripcion: getValue('descripcion'),
-      tipomantenimiento: getValue('tipoMantenimiento'),
-      fecha_creacion: getValue('fechaInicio'),
-      estado: getValue('estado'),
-      ubicacion: getValue('ubicacion'),
-      observaciones: getValue('observaciones'),
-      Id_Equipo: getValue('selectEquipo') ? parseInt(getValue('selectEquipo')) : null,
-      Id_Repuesto: getValue('selectRepuesto') ? parseInt(getValue('selectRepuesto')) : null
+      tipomantenimiento: document.getElementById('tipoMantenimiento').value,
+      observaciones: document.getElementById('observaciones').value,
+      fecha_creacion: document.getElementById('fechaInicio').value,
+      descripcion: document.getElementById('descripcion').value,
+      estado: document.getElementById('estado').value,
+      ubicacion: document.getElementById('ubicacion').value,
+      Id_Modelo: document.getElementById('selectEquipo').value || null,
+      Id_Repuesto: document.getElementById('selectRepuesto').value || null
     };
 
-    console.log('Datos a enviar:', formData); 
-    const response = await fetch('/mantenimiento/registro', {
+    const response = await fetch('/api/mantenimiento/registro', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify(formData)
     });
 
-    console.log('Respuesta del servidor:', response); 
-
     const result = await response.json();
-    console.log('Resultado:', result); 
+    console.log(result);
 
     if (result.success) {
       alert('Mantenimiento registrado con éxito!');
-      form.reset();
+      document.getElementById('formularioMantenimiento').reset();
       await cargarTablaMantenimientos();
     } else {
       throw new Error(result.error || 'Error desconocido');
     }
   } catch (error) {
-    console.error('Error completo:', error); 
+    console.error('Error:', error);
     alert('Error al registrar el mantenimiento: ' + error.message);
   }
 });
@@ -133,7 +120,7 @@ async function eliminarMantenimiento(boton) {
   }
 
   try {
-    const response = await fetch(`/mantenimiento/eliminar/${id}`, {
+    const response = await fetch(`/api/mantenimiento/eliminar/${id}`, {
       method: 'DELETE'
     });
 
@@ -153,7 +140,7 @@ async function eliminarMantenimiento(boton) {
 
 async function cargarEdicion(mantenimientoId) {
   try {
-    const response = await fetch(`/mantenimiento/actualizar/${mantenimientoId}`);
+    const response = await fetch(`/api/mantenimiento/actualizar/${mantenimientoId}`);
     
     if (!response.ok) {
       throw new Error(`Error HTTP: ${response.status}`);
@@ -173,9 +160,10 @@ async function cargarEdicion(mantenimientoId) {
     document.getElementById('estadoEdicion').value = data.estado;
     document.getElementById('ubicacionEdicion').value = data.ubicacion;
     document.getElementById('observacionesEdicion').value = data.observaciones;
+
     await cargarSelectEdicion('selectEquipoEdicion', 'selectRepuestoEdicion');
-    document.getElementById('selectEquipoEdicion').value = data.Id_Equipo;
-    document.getElementById('selectRepuestoEdicion').value = data.Id_Repuesto;
+    document.getElementById('selectEquipoEdicion').value = data.Id_Modelo || '';
+    document.getElementById('selectRepuestoEdicion').value = data.Id_Repuesto || '';
     
   } catch (error) {
     console.error('Error al cargar datos:', error);
@@ -190,26 +178,29 @@ document.getElementById('btnActualizarMantenimiento').addEventListener('click', 
     form.classList.add('was-validated');
     return;
   }
+
   try {
     const mantenimientoId = document.getElementById('mantenimientoIdEdicion').value;
 
     const formData = {
-      tipomantenimiento: document.getElementById('tipoMantenimientoEdicion').value,
-      equipo_id: document.getElementById('selectEquipoEdicion').value || null,
-      fecha_creacion: document.getElementById('fechaInicioEdicion').value || null,
       descripcion: document.getElementById('descripcionEdicion').value,
+      tipomantenimiento: document.getElementById('tipoMantenimientoEdicion').value,
+      fecha_creacion: document.getElementById('fechaInicioEdicion').value || null,
       estado: document.getElementById('estadoEdicion').value,
-      campo: document.getElementById('campoEdicion').value,
-      repuesto_id: document.getElementById('selectRepuestoEdicion').value || null
+      ubicacion: document.getElementById('ubicacionEdicion').value,
+      observaciones: document.getElementById('observacionesEdicion').value,
+      Id_Modelo: document.getElementById('selectEquipoEdicion').value || null,
+      Id_Repuesto: document.getElementById('selectRepuestoEdicion').value || null
     };
 
-    const response = await fetch(`/mantenimiento/enviar/${mantenimientoId}`, {
+    const response = await fetch(`/api/mantenimiento/enviar/${mantenimientoId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(formData)
     });
+
     const result = await response.json();
 
     if (response.ok) {
@@ -229,7 +220,6 @@ document.addEventListener('click', async (e) => {
   if (e.target.matches('.btn-editar') || e.target.closest('.btn-editar')) {
     const btn = e.target.closest('.btn-editar');
     const mantenimientoId = btn.getAttribute('data-id');
-    console.log('ID del mantenimiento seleccionado:', mantenimientoId);
   
     if (mantenimientoId) {
       await cargarEdicion(mantenimientoId);
@@ -239,22 +229,23 @@ document.addEventListener('click', async (e) => {
   if (e.target.matches('.btn-orden') || e.target.closest('.btn-orden')) {
     const btn = e.target.closest('.btn-orden');
     const mantenimientoId = btn.getAttribute('data-id');
-    console.log('ID del mantenimiento seleccionado para orden:', mantenimientoId);
   
     if (mantenimientoId) {
       try {
-        const response = await fetch(`/mantenimiento/actualizar/${mantenimientoId}`);
+        const response = await fetch(`/api/mantenimiento/actualizar/${mantenimientoId}`);
         const data = await response.json();
-  
+
         document.getElementById('mantenimientoIdOrden').value = data.mantenimiento_id;
-        document.getElementById('tipoMantenimientoOrden').value = data.tipomantenimiento;
-        document.getElementById('fechaInicioOrden').value = data.fecha_creacion;
-        document.getElementById('estadoOrden').value = data.estado;
         document.getElementById('descripcionOrden').value = data.descripcion;
-        document.getElementById('campoOrden').value = data.campo;
+        document.getElementById('tipoMantenimientoOrden').value = data.tipomantenimiento;
+        document.getElementById('fechaInicioOrden').value = data.fecha_creacion.split('T')[0];
+        document.getElementById('estadoOrden').value = data.estado;
+        document.getElementById('ubicacionOrden').value = data.ubicacion;
+        document.getElementById('observacionesOrden').value = data.observaciones;
         await cargarSelectEdicion('selectEquipoOrden', 'selectRepuestoOrden');
-        document.getElementById('selectEquipoOrden').value = data.equipo_id;
-        document.getElementById('selectRepuestoOrden').value = data.repuesto_id;
+        document.getElementById('selectEquipoOrden').value = data.Id_Modelo || '';
+        document.getElementById('selectRepuestoOrden').value = data.Id_Repuesto || '';
+  
   
       } catch (error) {
         console.error('Error al cargar datos en modal de orden:', error);
@@ -297,7 +288,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function cargarOrdenesTrabajo() {
   try {
-    const response = await fetch('/mantenimiento/obtenerOrdenesTrabajo');
+    const response = await fetch('/api/ordenes/obtenerOrdenesTrabajo');
     const resultado = await response.json();
     const ordenes = resultado.data;
 
@@ -305,7 +296,7 @@ async function cargarOrdenesTrabajo() {
     tbody.innerHTML = ordenes.map(orden => `
       <tr>
         <td>${orden.orden_id}</td>
-        <td>${orden.nombre_equipo}</td>
+        <td>${orden.nombre_equipo || 'Sin especificar'}</td>
         <td>${orden.personal}</td>
         <td>${new Date(orden.fecha_ejecucion).toLocaleDateString()}</td>
         <td>${new Date(orden.fecha_fin).toLocaleDateString()}</td>
@@ -336,7 +327,7 @@ async function cargarOrdenesTrabajo() {
 
 async function selectEmpleadosOrden() {
   try {
-    const response = await fetch('/mantenimiento/empleado-orden');
+    const response = await fetch('/api/ordenes/empleadoOrden');
     const empleado = await response.json();
 
     const selectEmpleado = document.getElementById('selectPersonalMantenimiento');
@@ -344,7 +335,7 @@ async function selectEmpleadosOrden() {
     empleado.forEach(empleados => {
       const option = document.createElement('option');
       option.value = empleados.empleado_id;
-      option.textContent = empleados.nombre;
+      option.textContent = empleados.personal;
       selectEmpleado.appendChild(option);
     });
 
@@ -376,7 +367,7 @@ document.getElementById('btnOrdenTrabajo').addEventListener('click', async (e) =
   };
 
   try {
-    const response = await fetch('/mantenimiento/crear-orden', {
+    const response = await fetch('/api/ordenes/crearOrden', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -385,7 +376,7 @@ document.getElementById('btnOrdenTrabajo').addEventListener('click', async (e) =
     });
     const result = await response.json();
     if (result.success) {
-      const estadoRes = await fetch(`/mantenimiento/solicitudes/estado/${mantenimientoId}`, {
+      const estadoRes = await fetch(`/api/mantenimiento/solicitudes/estado/${mantenimientoId}`, {
         method: 'PUT'
       });
 
@@ -426,7 +417,7 @@ async function eliminarOrdenTrabajo(boton) {
   }
 
   try {
-    const estadoRes = await fetch(`/mantenimiento/solicitudes/eliminado/${mantenimientoId}`, {
+    const estadoRes = await fetch(`/api/mantenimiento/solicitudes/eliminado/${mantenimientoId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
@@ -438,7 +429,7 @@ async function eliminarOrdenTrabajo(boton) {
       throw new Error('No se pudo cambiar el estado: ' + estadoResult.error);
     }
 
-    const deleteRes = await fetch(`/mantenimiento/eliminarOrdenTrabajo/${id}`, {
+    const deleteRes = await fetch(`/api/ordenes/eliminarOrdenTrabajo/${id}`, {
       method: 'DELETE'
     });
 
@@ -467,7 +458,7 @@ async function completarOrdenTrabajo(boton) {
   if (!confirmacion) return;
 
   try {
-    const res = await fetch(`/mantenimiento/solicitudes/completado/${mantenimientoId}`, {
+    const res = await fetch(`/api/mantenimiento/solicitudes/completado/${mantenimientoId}`, {
       method: 'PUT'
     });
 
@@ -477,7 +468,7 @@ async function completarOrdenTrabajo(boton) {
       throw new Error('No se pudo cambiar el estado: ' + estadoResult.error);
     }
 
-    const pri = await fetch(`/mantenimiento/prioridad/${ordenId}`, {
+    const pri = await fetch(`/api/ordenes/prioridad/${ordenId}`, {
       method: 'PUT'
     });
 
@@ -511,48 +502,4 @@ document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(btn => {
       collapseInstance.hide();
     });
   });
-});
-
-document.getElementById('btnCargarReportes').addEventListener('click', async () => {
-  const desde = document.getElementById('desde').value;
-  const hasta = document.getElementById('hasta').value;
-  const estado = document.getElementById('estado').value;
-  const tipo = document.getElementById('tipo').value;
-
-  try {
-    const res = await fetch('/reportesFiltrados', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        desde,
-        hasta,
-        estado,
-        tipo
-      })
-    });
-
-    const data = await res.json();
-
-    if (!data.success) throw new Error(data.error);
-
-    const reportes = data.reportes;
-    const tbody = document.getElementById('datosReportes');
-    tbody.innerHTML = reportes.map(reporte => `
-      <tr>
-        <td>${reporte.mantenimiento_id}</td>
-        <td>${reporte.tipomantenimiento}</td>
-        <td>${new Date(reporte.fecha_creacion).toLocaleDateString()}</td>
-        <td>${new Date(reporte.fecha_ejecucion).toLocaleDateString()}</td>
-        <td>${new Date(reporte.fecha_fin).toLocaleDateString()}</td>
-        <td>${reporte.estado}</td>
-        <td>${reporte.equipo_nombre}</td>
-        <td>
-          <button class="btn btn-info">Ver reporte</button>
-        </td>
-      </tr>
-    `).join('');
-  } catch (error) {
-    console.error('Error al cargar reportes:', error);
-    alert('Ocurrió un error al cargar los reportes');
-  }
 });

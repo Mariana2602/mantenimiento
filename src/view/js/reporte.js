@@ -13,12 +13,12 @@ async function cargarReporte() {
     }
     tbody.innerHTML = mantenimientos.map(m => `
       <tr id="mantenimiento-row-${m.mantenimiento_id}">
-        <td>${m.nombre ?? ''} ${m.apellido ?? ''}</td>
+        <td>${m.nombre ?? 'Sin especificar'} ${m.apellido ?? ''}</td>
         <td>${new Date(m.fecha_creacion).toLocaleDateString()}</td>
         <td>${new Date(m.fecha_ejecucion).toLocaleDateString()}</td>
         <td>${new Date(m.fecha_fin).toLocaleDateString()}</td>
         <td>${m.tipomantenimiento}</td>
-        <td>${m.equipos_nombre}</td>
+        <td>${m.equipos_nombre || 'Sin especificar'}</td>
         <td>${m.estado}</td>
         <td class="actions" id="acciones-${m.mantenimiento_id}">
           <a href="#" class="btn-detalles" data-id="${m.mantenimiento_id}" data-bs-toggle="modal" data-bs-target="#modalDetalles"><i class="fas fa-info mx-1"></i></a>
@@ -47,16 +47,16 @@ document.addEventListener('click', function (e) {
 
   const detalleBody = document.getElementById('detalle-body');
   detalleBody.innerHTML = `
-    <tr><th>Encargado</th><td>${m.nombre ?? ''} ${m.apellido ?? ''}</td></tr>
-    <tr><th>Cedula</th><td>${m.cedula ?? ''}</td></tr>
-    <tr><th>Cargo</th><td>${m.cargo ?? ''}</td></tr>
+    <tr><th>Encargado</th><td>${m.nombre ?? 'Sin especificar'} ${m.apellido ?? ''}</td></tr>
+    <tr><th>Cedula</th><td>${m.cedula ?? 'Sin especificar'}</td></tr>
+    <tr><th>Cargo</th><td>${m.cargo ?? 'Sin especificar'}</td></tr>
     <tr><th>ID servicio</th><td>${m.mantenimiento_id}</td></tr>
     <tr><th>Solicitud</th><td>${new Date(m.fecha_creacion).toLocaleDateString()}</td></tr>
     <tr><th>Inicio</th><td>${new Date(m.fecha_ejecucion).toLocaleDateString()}</td></tr>
     <tr><th>Fin</th><td>${new Date(m.fecha_fin).toLocaleDateString()}</td></tr>
     <tr><th>Tipo</th><td>${m.tipomantenimiento}</td></tr>
-    <tr><th>Objetivo</th><td>${m.equipos_nombre}</td></tr>
-    <tr><th>Materiales</th><td>${m.repuestos_nombre}</td></tr>
+    <tr><th>Objetivo</th><td>${m.equipos_nombre ?? 'Sin especificar'}</td></tr>
+    <tr><th>Materiales</th><td>${m.repuestos_nombre ?? 'Sin especificar'}</td></tr>
     <tr><th>Estatus</th><td>${m.estado}</td></tr>
     <tr><th>Descripcion</th><td>${m.descripcion}</td></tr>
   `;

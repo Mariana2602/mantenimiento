@@ -4,6 +4,7 @@ import {join, dirname} from 'path'
 import { fileURLToPath } from 'url'
 import mantenimientoRoute from './routes/mantenimientoRoute.js';
 import reporteRoute from './routes/reporteRoute.js'
+import ordenesTrabajoRoute from './routes/ordenesRoute.js'
 
 const app = express();
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -14,8 +15,9 @@ app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: false}));
 app.use(express.json());
 
-app.use('/mantenimiento', mantenimientoRoute);
-app.use('/reporte', reporteRoute);
+app.use('/api/mantenimiento', mantenimientoRoute);
+app.use('/api/ordenes', ordenesTrabajoRoute);
+app.use('/api/reporte', reporteRoute);
 
 app.get('/', (req, res) => {
     res.sendFile(join(__dirname, 'view', 'index.html'));
