@@ -38,10 +38,10 @@
                     <div class="row">
                         <div class="p-4 bg-white rounded-2 shadow">
                             <p class="d-flex gap-2">
-                                <button class="btn" style="background-color: #00499b; color: white;" data-bs-toggle="collapse" data-bs-target="#ordenesServicio" aria-expanded="false">Solicitudes de servicio</button>
-                                <button class="btn" style="background-color: #00499b; color: white;" data-bs-toggle="collapse" data-bs-target="#ordenesTrabajo" aria-expanded="false">Órdenes de trabajo</button>
-                                <a href="reporte/" class="btn" style="background-color: #00499b; color: white;" type="button">Reportes</a>
-                                <button type="button" class="btn text-end ms-auto" style="background-color: #00499b; color: white;" data-bs-toggle="modal" data-bs-target="#modalSolicitud"><i class="fas fa-plus me-2"></i>Nueva solicitud</button>
+                                <button class="btn btn-azul" data-bs-toggle="collapse" data-bs-target="#ordenesServicio" aria-expanded="false">Solicitudes de servicio</button>
+                                <button class="btn btn-azul" data-bs-toggle="collapse" data-bs-target="#ordenesTrabajo" aria-expanded="false">Órdenes de trabajo</button>
+                                <a href="reporte/" class="btn btn-azul" type="button">Reportes</a>
+                                <button type="button" class="btn text-end ms-auto btn-azul" data-bs-toggle="modal" data-bs-target="#modalSolicitud"><i class="fas fa-plus me-2"></i>Nueva solicitud</button>
                             </p>
                             <div class="row">
                                 <div class="col-md-12">
@@ -50,7 +50,7 @@
                                             <div class="col-md-12">
                                                     <div class="p-4 bg-white rounded-2 shadow border">
                                                         <h2>Solicitudes de servicio</h2><br>
-                                                        <table class="table table-striped text-center" id="ordenes-mantenimiento">
+                                                        <table class="table table-striped text-center table-servicios" id="ordenes-mantenimiento">
                                                             <thead>
                                                                 <tr>
                                                                     <th>ID </th>
@@ -79,7 +79,7 @@
                                                 <br>
                                                 <div class="p-4 bg-white rounded-2 shadow border">
                                                     <h2>Órdenes de trabajo</h2><br>
-                                                    <table class="table table-striped text-center">
+                                                    <table class="table table-striped text-center table-servicios">
                                                         <thead>
                                                             <tr>
                                                                 <th>Nº</th>
@@ -131,14 +131,14 @@
                             <div class="modal-dialog modal-lg">
                                 <div class="modal-content">
                                     <div class="modal-body text-start pb-5 px-5 text-secondary">
-                                        <p class="my-2 fs-3 text-center">Registro de solicitud de servicio</p>
+                                        <p class="my-2 fs-2 text-center">Registro de solicitud de servicio</p>
                                         <hr>
                                         <form class="row g-3 needs-validation" id="formularioMantenimiento" novalidate>
-                                            <div class="col-md-12 mb-2">
+                                            <div class="col-md-12 mb-1">
                                                 <label class="form-label">Descripción</label>
                                                 <input id="descripcion" type="text" class="form-control" required>
                                             </div>
-                                            <div class="col-md-6 mb-2">
+                                            <div class="col-md-6 mb-1">
                                                 <label class="form-label">Tipo de mantenimiento</label>
                                                 <select id="tipoMantenimiento" class="form-select" required>
                                                     <option selected>Correctivo</option>
@@ -147,28 +147,29 @@
                                                     <option>Predictivo</option>
                                                 </select>
                                             </div>
-                                            <div class="col-md-6 mb-2">
+                                            <div class="col-md-6 mb-1">
                                                 <label class="form-label">Fecha de creación</label>
                                                 <input id="fechaInicio" type="date" class="form-control" required>
                                             </div>
-                                            <div class="col-md-6 mb-2">
+                                            <div class="col-md-6 mb-1">
                                                 <label class="form-label">Estado</label>
                                                 <input id="estado" type="text" class="form-control" value="Pendiente" disabled>
                                             </div>
-                                            <div class="col-md-6 mb-2">
+                                            <div class="col-md-6 mb-1">
                                                 <label class="form-label">Ubicación</label>
                                                 <input id="ubicacion" type="text" class="form-control" required>
                                             </div>
-                                            <div class="col-md-12 mb-2">
+                                            <div class="col-md-12 mb-1">
                                                 <label class="form-label">Observaciones</label>
                                                 <input id="observaciones" type="text" class="form-control" required>
                                             </div>
-                                            <div class="col-md-6 mb-2">
+                                            <div class="text-secondary text-center mb-0">¡Especifique el equipo si se va a realizar una orden de servicio para equipos!</div>
+                                            <div class="col-md-6 mb-1">
                                                 <label class="form-label">Equipo</label>
                                                 <select id="selectEquipo" class="form-select select-equipo-dinamico">
                                                 </select>
                                             </div>
-                                            <div class="col-md-6 mb-2">
+                                            <div class="col-md-6 mb-1">
                                                 <label class="form-label">Repuesto</label>
                                                 <select id="selectRepuesto" class="form-select select-repuesto-dinamico">
                                                 </select>
@@ -186,7 +187,7 @@
                             <div class="modal-dialog modal-lg">
                                 <div class="modal-content">
                                     <div class="modal-body text-start pb-5 px-5 text-secondary">
-                                        <p class="my-4 fs-3 text-center">Actualización de orden de mantenimiento</p>
+                                        <p class="my-2 fs-3 text-center">Actualización de orden de mantenimiento</p>
                                         <hr>
                                         <form class="row g-3 needs-validation" id="formularioEdicion" novalidate>
                                             <input type="hidden" id="mantenimientoIdEdicion" required>
@@ -211,14 +212,15 @@
                                                 <label class="form-label">Estado</label>
                                                 <input id="estadoEdicion" type="text" class="form-control" value="Pendiente" disabled>
                                             </div>
-                                            <div class="col-md-6 mb-2">
+                                            <div class="col-md-6 mb-1">
                                                 <label class="form-label">Ubicación</label>
                                                 <input id="ubicacionEdicion" type="text" class="form-control" required>
                                             </div>
-                                            <div class="col-md-12 mb-2">
+                                            <div class="col-md-12 mb-1">
                                                 <label class="form-label">Observaciones</label>
                                                 <input id="observacionesEdicion" type="text" class="form-control" required>
                                             </div>
+                                            <div class="text-secondary">¡Especifique el equipo si se va a realizar una orden de servicio para equipos!</div>
                                             <div class="col-md-6">
                                                 <label class="form-label">Equipo</label>
                                                 <select id="selectEquipoEdicion" class="form-select select-equipo-dinamico">
@@ -242,7 +244,7 @@
                             <div class="modal-dialog modal-lg">
                                 <div class="modal-content">
                                     <div class="modal-body text-start pb-5 px-5 text-secondary">
-                                        <p class="my-4 fs-3 text-center">Registro de orden de trabajo</p>
+                                        <p class="my-2 fs-2 text-center">Registro de orden de trabajo</p>
                                         <hr>
                                         <form class="row g-3 needs-validation" id="formularioVisualizacionOrden" required>
                                             <input type="hidden" id="mantenimientoIdOrden">

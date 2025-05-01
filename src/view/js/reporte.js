@@ -2,7 +2,7 @@ let mantenimientosGlobal = [];
 
 async function cargarReporte() {
   try {
-    const response = await fetch('/reporte/lista');
+    const response = await fetch('/api/reporte/lista');
     const mantenimientos = await response.json();
     mantenimientosGlobal = mantenimientos; // INFO GUARDADA PARA EL MODAL
 

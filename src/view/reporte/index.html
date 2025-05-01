@@ -29,42 +29,42 @@
     </nav>
     <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
         <div class="main-content pt-3">
-            <h1 class="mb-4">Reportes de mantenimiento</h1>
-            <hr>
-            <div class='input-group mb-3'>
-                <input type='text' class='form-control' id="buscadorReportes" aria-label="Buscar" onkeyup="buscarReportes()" placeholder='Buscar reportes...'>
-                <div class='input-group-append'>
-                    <span class='input-group-text'><i class='fas fa-search'></i></span>
+            <div class="row">
+                <div class="col-md-12">
+                    <h1 class="mb-4">Reportes de mantenimiento</h1>
+                    <hr>
                 </div>
-            </div>  
-            <div style="margin-top: 3vh;">
-                <button id="imprimir" class="btn" style="background-color: #00499b; color: white;" type="button">Imprimir</button>
-                <a href="../" class="btn" style="background-color: #00499b; color: white;" type="button">Órdenes de mantenimiento</a>
+                <div class="col-md-8">
+                    <div class='input-group mb-3'>
+                        <input type='text' class='form-control' id="buscadorReportes" aria-label="Buscar" onkeyup="buscarReportes()" placeholder='Buscar reportes...'>
+                    </div>  
+                </div>
+                <div class="col-md-4">
+                    <button id="imprimir" class="btn btn-azul" type="button">Imprimir</button>
+                    <a href="../" class="btn btn-azul" type="button">Órdenes de mantenimiento</a>
+                </div>
             </div>
-            <div style="margin-top: 3vh;">
-                <div class="card border-0">
-                    <div class="card-body">
-                        <div class="col-md-12">
-                            <h2>Reportes</h2><br>
-                            <table class="table table-striped text-center" id="ordenes-mantenimiento">
-                                <thead>
-                                    <tr>
-                                        <th class="text-center">Encargado</th>
-                                        <th class="text-center">Solicitud</th>
-                                        <th class="text-center">Inicio</th>
-                                        <th class="text-center">Fin</th>
-                                        <th class="text-center">Tipo</th>
-                                        <th class="text-center">Equipo</th>
-                                        <th class="text-center">Estatus</th>
-                                        <th class="text-center">Detalles</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="text-secondary"  id="data-container">
-                                </tbody>
-                            </table>
-                        </div>
-                    </div> 
-                </div>
+            <div class="card border-0">
+                <div class="card-body">
+                    <div class="col-md-12 areaImpresion">
+                        <table class="table table-striped text-center" id="ordenes-mantenimiento">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">Encargado</th>
+                                    <th class="text-center">Solicitud</th>
+                                    <th class="text-center">Inicio</th>
+                                    <th class="text-center">Fin</th>
+                                    <th class="text-center">Tipo</th>
+                                    <th class="text-center">Equipo</th>
+                                    <th class="text-center">Estatus</th>
+                                    <th class="text-center">Detalles</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-secondary"  id="data-container">
+                            </tbody>
+                        </table>
+                    </div>
+                </div> 
             </div>
         </div>
     </main>

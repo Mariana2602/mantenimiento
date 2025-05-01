@@ -1,7 +1,26 @@
-body {
-  font-family: 'Roboto', sans-serif;
-  background-color: #f8f9fa;
-  color: #343a40;
+@media print {
+  body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f8f9fa;
+    color: #343a40;
+  }
+  #sidebarMenu,
+  #imprimir,
+  #buscadorReportes,
+  hr,
+  a[href="../"] {
+    display: none !important;
+  }
+  .container, .p-4.bg-white {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    box-shadow: none !important;
+  }
+  table {
+    margin: 0 auto !important;
+    width: 100% !important;
+  }
 }
 
 .sidebar {
@@ -25,6 +44,14 @@ body {
   display: inline;
   align-items: center;
   margin: 0 3px;
+}
+.btn-azul{
+  background-color: #00499b; 
+  color: white;
+}
+.btn-azul:hover{
+  background-color: #002c5e; 
+  color: white;
 }
 
 nav .fas {
@@ -140,7 +167,7 @@ nav .fas {
   background-color: #f8f9fa;
 }
 
-table td {
+.table-servicios td {
   font-size: 1.8vh;
 }
 
@@ -154,14 +181,6 @@ form label {
   font-weight: bold;
   display: block;
   margin: 2vh auto 1vh auto;
-}
-
-input {
-  border: solid 0.5px #b6b6b6;
-}
-
-input[type="date"] {
-  height: 4.5vh;
 }
 
 input:not(#search-bar, #buscadorReportes, #search-bar1, #search-bar2, #suppliers-tix, #suppliers-phone, #products-code, #orders-supplier, #orders-product, #requirements-product), select, textarea {

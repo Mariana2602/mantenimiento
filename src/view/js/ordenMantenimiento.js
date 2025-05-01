@@ -23,7 +23,6 @@ async function cargarTablaMantenimientos() {
         <td>${m.nombre_repuesto || 'Sin especificar'}</td>
         <td class="actions" id="acciones-${m.mantenimiento_id}">
           ${m.Estado === 'Eliminado' ? `
-            <a href="#" class="btn-eliminar" data-id="${m.mantenimiento_id}"><i class="fas fa-trash text-danger mx-1"></i></a>
           ` : ''}
           ${m.Estado !== 'Completado' && m.Estado !== 'Eliminado' && m.Estado !== 'En proceso' ? `
             <a href="#" class="btn-editar" data-id="${m.mantenimiento_id}" data-bs-toggle="modal" data-bs-target="#modalEdicion"><i class="fas fa-pen text-warning mx-1"></i></a>
@@ -302,6 +301,7 @@ async function cargarOrdenesTrabajo() {
         <td>${new Date(orden.fecha_fin).toLocaleDateString()}</td>
         <td>
           <span class="badge ${
+            orden.prioridad === 'Eliminada' ? 'text-bg-danger' :
             orden.prioridad === 'Completado' ? 'text-bg-success' :
             orden.prioridad === 'Alta' ? 'text-bg-danger' :
             orden.prioridad === 'Media' ? 'text-bg-warning' :
@@ -311,9 +311,15 @@ async function cargarOrdenesTrabajo() {
         <td>
           ${orden.prioridad === 'Completado' ? `
             <span class="badge text-bg-success p-2">Completado</span>
+          ` : orden.prioridad === 'Eliminada' ? `
+            <span class="badge text-bg-danger p-2">Eliminada</span>
           ` : `
-            <a href="#" class="btn-eliminarTrabajo" data-id="${orden.orden_id}" data-mantenimiento="${orden.mantenimiento_id}"><i class="fas fa-trash text-danger mx-1"></i></a>
-            <a href="#" class="btn-completar" data-id="${orden.orden_id}" data-mantenimiento="${orden.mantenimiento_id}"><i class="fas fa-check text-success mx-1"></i></a>
+            <a href="#" class="btn-eliminarTrabajo" data-id="${orden.orden_id}" data-mantenimiento="${orden.mantenimiento_id}">
+              <i class="fas fa-trash text-danger mx-1"></i>
+            </a>
+            <a href="#" class="btn-completar" data-id="${orden.orden_id}" data-mantenimiento="${orden.mantenimiento_id}">
+              <i class="fas fa-check text-success mx-1"></i>
+            </a>
           `}
         </td>
       </tr>
